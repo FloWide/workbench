@@ -1,0 +1,11 @@
+<mat-toolbar style="padding: 2rem;" color="primary" fxLayout="row" fxLayoutAlign="center center">
+    <div class="info-block">
+        <span style="display: block;">&copy; {{ today | date: 'yyyy' }} FloWide Ltd.</span>
+        <!--<span >Version: {{version}}</span>-->
+    </div>
+    <span fxFlex="1 1 auto"></span>
+    <div class="info-block" style="font-size:60%;line-height: 10px;">
+        Version: {{version}}<br>    
+        Build time: {{buildTime}}
+    </div>
+</mat-toolbar>

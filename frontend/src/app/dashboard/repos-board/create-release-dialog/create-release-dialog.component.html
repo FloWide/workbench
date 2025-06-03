@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Create new Release</h2>
+<p>Note: You will create a release from the commited changes.</p>
+<form [formGroup]="creationForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content>
+
+        <mat-grid-list cols="4">
+            <mat-grid-tile colspan="2">
+
+                <mat-form-field style="width: 100%;" appearance="fill">
+                    <mat-label>Git Tag</mat-label>
+                    <input type="text"
+                        placeholder="Git Tag"
+                        aria-label="Number"
+                        matInput
+                        formControlName='tag'
+                        [matAutocomplete]="tagauto">
+                    <mat-autocomplete #tagauto="matAutocomplete">
+                        <mat-option *ngFor="let option of data.gitState.tags"  [value]="option">{{option}}</mat-option>
+                    </mat-autocomplete>
+
+
+                </mat-form-field>
+
+            </mat-grid-tile>
+
+            <mat-grid-tile colspan="2">
+
+                <mat-form-field style="width: 100%;" appearance="fill">
+                    <mat-label>Target branch</mat-label>
+                    <mat-select [(value)]="target_refish">
+                        <mat-option *ngFor="let option of data.gitState.branches"  [value]="option">{{option}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+            </mat-grid-tile>
+            
+            <mat-grid-tile colspan="4">
+                <mat-form-field style="width: 100%;" appearance="fill">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name">
+                </mat-form-field>
+            </mat-grid-tile>
+
+        </mat-grid-list>
+
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+    <button mat-button type="button" (click)="onClose()">Cancel</button>
+    <span fxFlex='1 1 auto'></span>
+    <button type="submit" mat-flat-button color="primary" [disabled]="!creationForm.valid" >Create</button>
+    </div>
+</form>

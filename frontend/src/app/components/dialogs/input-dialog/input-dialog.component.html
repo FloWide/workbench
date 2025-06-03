@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>{{data.title}}</h2>
+<div mat-dialog-content>
+  <mat-form-field style="width: 100%;">
+    <span matPrefix *ngIf="data.inputPrefix" class="input-prefix"> 
+
+      <button mat-button disabled>{{data.inputPrefix}}</button>
+
+    </span>
+    <mat-label>{{data.inputLabel}}</mat-label>
+    <input autofocus matInputAutofocus matInput #inputField [value]="data.defaultValue || ''" (keydown)="inputKeyDown($event)" tabindex="0">
+    <mat-hint *ngIf="data.hint">E.g.: {{data.hint}}</mat-hint>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+  <button mat-button (click)="onClose()">Cancel</button>
+  <span fxFlex='1 1 auto'></span>
+  <button mat-raised-button cdkFocusInitial (click)="onSubmit(inputField.value)" color="primary">{{data.submitButton}}</button>
+</div>

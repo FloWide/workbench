@@ -1,0 +1,27 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+
+
+@mixin theme($theme) {
+  $color-config: mat.get-color-config($theme);
+  $background: map.get($color-config, background);
+
+  .browser-frame {
+    border: 2px solid map.get($background,background);
+    border-radius: 0px;
+    height: 100%;
+  }
+  .browser-frame__top {
+    background: map.get($background,background);
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    box-sizing: border-box;
+  }
+  .browser-frame__body {
+    height: calc(100% - 42px);
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,110 @@
+@use "@angular/material" as mat;
+
+$md-darkerblue: (
+    50: #e0e6e8,
+    100: #b3c2c7,
+    200: #8099a1,
+    300: #4d707b,
+    400: #26515f,
+    500: #003243,
+    600: #002d3d,
+    700: #002634,
+    800: #001f2c,
+    900: #00131e,
+    A100: #5bb2ff,
+    A200: #289aff,
+    A400: #0081f4,
+    A700: #0074da,
+    contrast: (
+        50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #ffffff,
+        400: #ffffff,
+        500: #ffffff,
+        600: #ffffff,
+        700: #ffffff,
+        800: #ffffff,
+        900: #ffffff,
+        A100: #000000,
+        A200: #000000,
+        A400: #ffffff,
+        A700: #ffffff
+    )
+);
+
+$md-darkblue: (
+    50: #e2f1f5,
+    100: #b6dde6,
+    200: #86c6d6,
+    300: #55afc6,
+    400: #309eb9,
+    500: #0c8dad,
+    600: #0a85a6,
+    700: #087a9c,
+    800: #067093,
+    900: #035d83,
+    A100: #b0e4ff,
+    A200: #7dd3ff,
+    A400: #4ac1ff,
+    A700: #30b8ff,
+    contrast: (
+        50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #000000,
+        400: #000000,
+        500: #ffffff,
+        600: #ffffff,
+        700: #ffffff,
+        800: #ffffff,
+        900: #ffffff,
+        A100: #000000,
+        A200: #000000,
+        A400: #000000,
+        A700: #000000
+    )
+);
+
+$md-orange: (
+    50: #fbf2e8,
+    100: #f4dec6,
+    200: #edc9a1,
+    300: #e6b37b,
+    400: #e0a25e,
+    500: #db9242,
+    600: #d78a3c,
+    700: #d27f33,
+    800: #cd752b,
+    900: #c4631d,
+    A100: #fffcfb,
+    A200: #ffddc8,
+    A400: #ffbe95,
+    A700: #ffae7b,
+    contrast: (
+        50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #000000,
+        400: #000000,
+        500: #000000,
+        600: #000000,
+        700: #000000,
+        800: #000000,
+        900: #ffffff,
+        A100: #000000,
+        A200: #000000,
+        A400: #000000,
+        A700: #000000
+    )
+);
+
+$light-primary: mat.define-palette($md-darkerblue);
+$dark-primary: mat.define-palette($md-darkblue);
+$accent: mat.define-palette($md-orange, A200, A100, A400);
+
+$warn: mat.define-palette(mat.$red-palette);
+
+$light-theme: mat.define-light-theme($light-primary, $accent, $warn);
+
+$dark-theme: mat.define-dark-theme($dark-primary, $accent, $warn);

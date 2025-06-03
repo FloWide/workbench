@@ -1,0 +1,25 @@
+.login-pf body {
+    background: linear-gradient(180deg, rgba(0,50,67,1) 47%, rgb(30 30 30) 100%);
+}
+
+div.kc-logo-text {
+    display: none;
+}
+
+div#kc-header-wrapper {
+    display: none;
+}
+
+div#kc-header {
+    background: url(../img/fw-logo-white.svg);
+    background-repeat: no-repeat;
+    height: 100px;
+    width: 400px;
+    margin: 10px auto;
+    background-size: contain;
+    color:transparent;
+}
+
+div.card-pf {
+    border-color: #db9242;
+}

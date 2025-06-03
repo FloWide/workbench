@@ -1,0 +1,38 @@
+<div class="container" fxLayout="column" style="position: relative;">
+
+    <app-header>
+        
+        <button mat-stroked-button (click)="search()">
+            <mat-icon fontSet="fa" fontIcon="fa-magnifying-glass"></mat-icon>
+            Search
+        </button>
+
+        <button mat-stroked-button (click)="onCreateNew()" style="margin: 0 0.5em 0 0.5em;">
+            <mat-icon fontSet="fa" fontIcon="fa-circle-plus"></mat-icon>
+            Create New
+        </button>
+        
+    </app-header>
+
+    <div class="content" fxFlex='1 1 auto' [spinOn]="loading">
+
+        <nav mat-tab-nav-bar mat-stretch-tabs [tabPanel]="tabPanel">
+            <a mat-tab-link *ngIf="appsCount > 0" routerLink="/apps" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                Applications
+            </a>
+            <a mat-tab-link *ngIf="servicesCount> 0" routerLink="/services" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                Services
+            </a>
+            <a mat-tab-link *ngIf="reposCount > 0" routerLink="/repos" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+                Repositories
+            </a>
+            <a routerLink="" style="visibility: hidden;"></a> 
+        </nav>
+        <mat-tab-nav-panel #tabPanel>
+            <router-outlet></router-outlet>
+        </mat-tab-nav-panel>
+
+    </div>
+
+    <app-footer></app-footer>
+</div>

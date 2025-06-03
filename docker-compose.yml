@@ -1,0 +1,398 @@
+
+
+services:
+  keycloak-db:
+    image: postgres:$KEYCLOAK_DB_VERSION
+    container_name: keycloak-db
+    restart: unless-stopped
+    volumes:
+      - '$KEYCLOAK_DB_HOME:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=$KEYCLOAK_DB_USERNAME
+      - POSTGRES_PASSWORD=$KEYCLOAK_DB_PASSWORD
+      - POSTGRES_DB=$KEYCLOAK_DB_DATABASE
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.10
+
+  app-db:
+    image: postgres:$APP_DB_VERSION
+    container_name: app-db
+    restart: unless-stopped
+    volumes:
+      - '$APP_DB_HOME:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=$APP_DB_USERNAME
+      - POSTGRES_PASSWORD=$APP_DB_PASSWORD
+      - POSTGRES_DB=$APP_DB_DATABASE
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.11
+
+
+  keycloak:
+    image: docker.io/bitnami/keycloak:$KEYCLOAK_VERSION
+    container_name: keycloak
+    restart: unless-stopped
+    depends_on:
+      keycloak-db:
+        condition: service_started
+      keycloak-init:
+        condition: service_completed_successfully
+    environment:
+      KEYCLOAK_DATABASE_HOST: keycloak-db
+      KEYCLOAK_DATABASE_NAME: $KEYCLOAK_DB_DATABASE
+      KEYCLOAK_DATABASE_USER: $KEYCLOAK_DB_USERNAME
+      KEYCLOAK_DATABASE_PASSWORD: $KEYCLOAK_DB_PASSWORD
+      KC_HOSTNAME_STRICT: "false"
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HTTP_PORT: 80
+      KC_HOSTNAME: ${SERVER}.${DOMAIN}
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_PROXY: edge
+      KEYCLOAK_PRODUCTION: true
+      WEBHOOK_HTTP_BASE_PATH: http://10.20.20.16/webhooks/idp
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=deployment
+      - traefik.http.routers.keycloak.rule=PathPrefix(`/auth`)
+      - traefik.http.services.keycloak.loadbalancer.server.port=80
+    volumes:
+      - ./services/keycloak/fw_keycloak:/opt/bitnami/keycloak/themes/fw_keycloak
+      - keycloak_providers:/opt/bitnami/keycloak/providers
+    healthcheck:
+      test: ["CMD", "curl","-f","http://localhost/auth/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.12
+
+  keycloak-init:
+    image: curlimages/curl
+    container_name: keycloak-init
+    user: root
+    command:
+      - sh
+      - -c
+      - |
+        curl -L \
+          https://github.com/FloWide/keycloak-webhook/releases/download/v0.2.0/keycloak-webhook-0.2.0.jar \
+          -o /providers/keycloak-webhook-0.2.0.jar \
+        && chown 1000:1000 /providers/keycloak-webhook-0.2.0.jar
+    volumes:
+      - keycloak_providers:/providers
+    networks:
+      deployment:
+          ipv4_address: 10.20.20.13
+
+  keycloak-config:
+    image: bitnami/keycloak-config-cli:$KEYCLOAK_CONFIG_VERSION
+    container_name: keycloak-config
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      keycloak-init:
+        condition: service_completed_successfully
+    environment:
+      - KEYCLOAK_URL= http://keycloak/auth
+      - KEYCLOAK_USER=${KEYCLOAK_ADMIN_USER}
+      - KEYCLOAK_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - KEYCLOAK_AVAILABILITYCHECK_ENABLED=true
+      - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=120s
+      - IMPORT_FILES_LOCATIONS=/config/realm.yaml
+      - IMPORT_VAR-SUBSTITUTION_ENABLED=true
+      - APPS_ADMIN_PASSWORD=${APPS_ADMIN_PASSWORD}
+      - FLOWIDE_OIDC_CLIENT_SECRET=${FLOWIDE_OIDC_CLIENT_SECRET}
+      - SERVER=${SERVER}
+      - DOMAIN=${DOMAIN}
+    volumes:
+      - ./services/keycloak:/config
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.14
+
+  workbench_backend:
+    container_name: workbench_backend
+    restart: unless-stopped
+    privileged: true
+    pid: host
+    command: ["./scripts/backend.sh"]
+    depends_on: 
+      keycloak:
+        condition: service_healthy
+      keycloak-config:
+        condition: service_completed_successfully
+      app-db:
+        condition: service_started
+    extra_hosts:
+      - "test.flowide.net:10.20.20.254"
+    build:
+      context: ./backend
+      args:
+        HTTP_PROXY: $HTTP_PROXY
+        HTTPS_PROXY: $HTTPS_PROXY
+    environment:
+      DB_URI: postgresql+asyncpg://$APP_DB_USERNAME:$APP_DB_PASSWORD@app-db:5432/$APP_DB_DATABASE
+      KEYCLOAK_REALM_URL: http://keycloak/auth/realms/$SERVER
+      KEYCLOAK_OIDC_URL: http://$SERVER.$DOMAIN/auth/realms/$SERVER/.well-known/openid-configuration
+      SERVER: ${SERVER}
+      DOMAIN: ${DOMAIN}
+      LOG_LEVEL: $WORKBENCH_LOG_LEVEL
+      WEBHOOK_SECRET: ${WORKBENCH_WEBHOOK_SECRET}
+      PROXY_TEMPLATE: '{hash}.$SERVER.$DOMAIN'
+      REPOSITORIES_ROOT: $WORKBENCH_HOME/repos
+      SCHEME: https
+      HTTP_PROXY: $HTTP_PROXY
+      HTTPS_PROXY: $HTTPS_PROXY
+      ENV: PROD
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=deployment
+      - traefik.http.routers.script_handler.rule=PathPrefix(`/workbench-api`)
+      - traefik.http.routers.script_handler.priority=20
+      - traefik.http.services.script_handler.loadbalancer.server.port=80
+      - traefik.http.middlewares.strip-script_handler.stripprefix.prefixes=/workbench-api,/workbench-api/
+      - traefik.http.routers.script_handler.middlewares=strip-script_handler
+      - traefik.http.middlewares.workbench-proxy-auth.forwardauth.address=http://10.20.20.16/webhooks/proxy_auth
+    volumes:
+      - $WORKBENCH_HOME/repos:$WORKBENCH_HOME/repos
+      - $WORKBENCH_HOME/app_logos:/app_logos
+      - /var/run/docker.sock:/var/run/docker.sock
+      - shared_files:/data/shared_files
+      - public_http:/data/public_http
+    healthcheck:
+      test: curl http://localhost/repo || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.16
+      apps-network:
+
+  celery_worker:
+    container_name: celery_worker
+    restart: unless-stopped
+    command: ["./scripts/celery.sh"]
+    depends_on: 
+      keycloak:
+        condition: service_healthy
+      keycloak-config:
+        condition: service_completed_successfully
+      app-db:
+        condition: service_started
+    extra_hosts:
+      - "test.flowide.net:10.20.20.254"
+    build:
+      context: ./backend
+      args:
+        HTTP_PROXY: $HTTP_PROXY
+        HTTPS_PROXY: $HTTPS_PROXY
+    environment:
+      DB_URI: postgresql+asyncpg://$APP_DB_USERNAME:$APP_DB_PASSWORD@app-db:5432/$APP_DB_DATABASE
+      KEYCLOAK_REALM_URL: http://keycloak/auth/realms/$SERVER
+      KEYCLOAK_OIDC_URL: http://$SERVER.$DOMAIN/auth/realms/$SERVER/.well-known/openid-configuration
+      SERVER: ${SERVER}
+      DOMAIN: ${DOMAIN}
+      LOG_LEVEL: $WORKBENCH_LOG_LEVEL
+      WEBHOOK_SECRET: ${WORKBENCH_WEBHOOK_SECRET}
+      PROXY_TEMPLATE: '{hash}.$SERVER.$DOMAIN'
+      REPOSITORIES_ROOT: $WORKBENCH_HOME/repos
+      SCHEME: https
+      HTTP_PROXY: $HTTP_PROXY
+      HTTPS_PROXY: $HTTPS_PROXY
+      ENV: CELERY
+    labels:
+      - traefik.enable=false
+    volumes:
+      - $WORKBENCH_HOME/repos:$WORKBENCH_HOME/repos
+      - $WORKBENCH_HOME/app_logos:/app_logos
+      - /var/run/docker.sock:/var/run/docker.sock
+      - shared_files:/data/shared_files
+      - public_http:/data/public_http
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.17
+      apps-network: 
+  
+  workbench_frontend:
+    container_name: workbench_frontend
+    restart: unless-stopped
+    depends_on:
+       workbench_backend:
+        condition: service_healthy
+    build:
+      context: ./frontend
+      args:
+        SERVER: ${SERVER}
+        DOMAIN: ${DOMAIN}
+        HTTP_PROXY: $HTTP_PROXY
+        HTTPS_PROXY: $HTTPS_PROXY
+        VERSION: $VERSION
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=deployment
+      - traefik.http.routers.workbench.rule=PathPrefix(`/workbench`)
+      - traefik.http.routers.workbench.priority=10
+      - traefik.http.services.workbench.loadbalancer.server.port=80
+      - traefik.http.middlewares.strip-workbench.stripprefix.prefixes=/workbench,/workbench/
+      - traefik.http.routers.workbench.middlewares=strip-workbench, traefik-forward-auth
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.18
+
+  autoheal:
+    container_name: autoheal
+    image: willfarrell/autoheal
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: all
+      AUTOHEAL_START_PERIOD: 60
+      AUTOHEAL_INTERVAL: 60
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.21
+
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: unless-stopped
+    volumes:
+      - ./services/traefik/traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./services/traefik/traefik_dynamic.yml:/dynamic/traefik_dynamic.yml
+      - $SSL_CERT_PATH:/cert/cert.pem
+      - $SSL_KEY_PATH:/cert/key.pem
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.22
+      apps-network:
+
+  public-http:
+    image: nginx
+    restart: unless-stopped
+    container_name: public-http
+    volumes:
+      - public_http:/usr/share/nginx/html:ro
+      - ./services/http/public.conf:/etc/nginx/conf.d/default.conf
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=deployment
+      - traefik.http.routers.public-http.rule=PathPrefix(`/public`)
+      - traefik.http.services.public-http.loadbalancer.server.port=80
+      - traefik.http.middlewares.strip-public-http.stripprefix.prefixes=/public,/public/
+      - traefik.http.routers.public-http.middlewares=strip-public-http
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.23
+
+  private-http:
+    image: nginx
+    restart: unless-stopped
+    container_name: private-http
+    volumes:
+      - private_http:/usr/share/nginx/html:ro
+      - ./services/http/private.conf:/etc/nginx/conf.d/default.conf
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=deployment
+      - traefik.http.routers.private-http.rule=PathPrefix(`/private`)
+      - traefik.http.services.private-http.loadbalancer.server.port=80
+      - traefik.http.middlewares.strip-private-http.stripprefix.prefixes=/private,/private/
+      - traefik.http.routers.private-http.middlewares=strip-private-http, traefik-forward-auth
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.24
+
+  forwardauth:
+    image: mesosphere/traefik-forward-auth
+    container_name: traefik-forwardauth
+    restart: unless-stopped
+    extra_hosts:
+      - "test.flowide.net:10.20.20.254"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.25
+    environment:
+      - SECRET=${FORWARD_AUTH_SECRET}
+      - PROVIDER_URI=https://${SERVER}.${DOMAIN}/auth/realms/${SERVER}
+      - CLIENT_ID=flowide
+      - CLIENT_SECRET=${FLOWIDE_OIDC_CLIENT_SECRET}
+      - ENCRYPTION_KEY=${FORWARD_AUTH_ENCRYPTION_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=deployment"
+      - "traefik.http.services.forwardauth.loadbalancer.server.port=4181"
+      - "traefik.http.routers.forwardauth.entrypoints=websecure"
+      - "traefik.http.routers.forwardauth.rule=Path(`/_oauth`)"
+      - "traefik.http.routers.forwardauth.middlewares=traefik-forward-auth"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://forwardauth:4181"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.trustForwardHeader=true"
+
+  redis-broker:
+    image: redis:latest
+    restart: unless-stopped
+    container_name: redis-broker
+    command: redis-server --notify-keyspace-events AKE
+    networks:
+      deployment:
+        ipv4_address: 10.20.20.26
+
+  
+networks:
+  deployment:
+    driver: bridge
+    name: deployment
+    ipam:
+      config:
+        - subnet: 10.20.20.0/24
+          gateway: 10.20.20.254
+  apps-network:
+    name: apps-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.20.21.0/24
+          gateway: 10.20.21.254
+
+volumes:
+  shared_files:
+    name: shared_files
+    driver: local
+    driver_opts:
+      type: none
+      device: $SHARED_FILES_HOME
+      o: bind
+  public_http:
+    name: public_http
+    driver: local
+    driver_opts:
+      type: none
+      device: $PUBLIC_HTTP_HOME
+      o: bind
+  keycloak_providers:
+    name: keycloak_providers
+  private_http:
+    name: private_http
+    driver: local
+    driver_opts:
+      type: none
+      device: $PRIVATE_HTTP_HOME
+      o: bind

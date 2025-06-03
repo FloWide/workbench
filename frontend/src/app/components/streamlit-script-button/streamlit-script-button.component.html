@@ -1,0 +1,34 @@
+
+
+<div class="button-container">
+    <button [disabled]="!script.ready" class="script-button" mat-fab color="primary" [title]="script?.name" (click)="scriptClick.emit(script)" (contextmenu)="onContextMenu($event)">
+        <mat-icon *ngIf="(!scriptImage || image404 ) && script.app_config.proxy">web</mat-icon>
+        <mat-icon *ngIf="(!scriptImage || image404 ) && !script.app_config.proxy">terminal</mat-icon>
+        <br>
+        <p style="text-align:center;">{{(script?.name + "/" + script?.release.name) | maxLengthString:25}} </p>
+        <img *ngIf="scriptImage && !image404" [src]="scriptImage" (error)="image404 = true">
+    </button>
+    <mat-form-field *ngIf="sortedScripts.length > 1" appearance="standard" floatLabel="never" style="text-align: center;max-height: 20%;width: 100%;">
+        <mat-select [(value)]="script">
+            <mat-option *ngFor="let item of sortedScripts" [value]="item">
+                <span *ngIf="!(script.owner.username === me?.username || script.owner.username === 'apps-admin')">@{{item.owner.username}} -</span> {{item.name}}/{{item.release.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <p *ngIf="sortedScripts.length === 1" style="text-align: center;">
+        <span *ngIf="!(script.owner.username === me?.username || script.owner.username === 'apps-admin')">@{{script.owner.username}} -</span> {{script.name}}/{{script.release.name}}
+    </p>
+
+    <div style="visibility: hidden; position: fixed"
+        [style.left]="contextMenuPosition.x"
+        [style.top]="contextMenuPosition.y"
+        [matMenuTriggerFor]="actionMenu"
+        >
+    </div>
+
+    <mat-menu #actionMenu>
+        <button mat-menu-item (click)="actionClick.emit([script,ACTIONS.RUN_IN_FULLSCREEN])">Run in fullscreen</button>
+        <button mat-menu-item (click)="actionClick.emit([script,ACTIONS.DETAILS])">Details</button>
+    </mat-menu>
+</div>

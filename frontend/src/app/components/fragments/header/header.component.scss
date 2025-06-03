@@ -1,0 +1,23 @@
+
+
+.side-margin {
+    margin-left: 1em;
+    margin-right:1em;
+}
+
+.tool-bar {
+    height: 60px;
+
+    ngx-avatar {
+        margin: 8px;
+    }
+
+    .divider {
+        height: 40px;
+        border-right: 2px solid rgba($color: #fff, $alpha: 0.5);
+    }
+}
+
+.logo {
+    margin: 8px;
+}

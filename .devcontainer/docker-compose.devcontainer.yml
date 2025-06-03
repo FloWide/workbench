@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  workbench_backend:
+    working_dir: /workspace/backend
+    volumes:
+      - ./:/workspace:cached
+
+  celery_worker:
+    volumes:
+      - ./:/workspace
+
+  frontend:
+    working_dir: /workspace/frontend
+    volumes:
+      - ./:/workspace:cached

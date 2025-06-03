@@ -1,0 +1,9 @@
+<mat-list role="list" fxFlex="1 1 auto" style="box-sizing: border-box;">
+    <mat-list-item *ngFor="let item of repos; trackBy: trackBy" style="width: 100%;height: fit-content;margin-top: 1em;box-sizing: border-box;">
+        <app-repo-button 
+        [repo]="item" 
+        (edit)="onRepositoryEdit($event)" 
+        (delete)="onRepositoryDelete($event)" 
+        ></app-repo-button>
+    </mat-list-item>
+</mat-list>

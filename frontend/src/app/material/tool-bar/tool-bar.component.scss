@@ -1,0 +1,28 @@
+:host {
+    width:100%;
+    display: block;
+}
+
+mat-action-row {
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    padding: 0.25em;
+    box-sizing: border-box;
+}
+
+.center {
+    flex:1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+
+.start, .center, .end {
+    box-sizing: border-box;
+}
+
+.end {
+    padding-right: 10px;
+}

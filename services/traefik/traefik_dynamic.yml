@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://json.schemastore.org/traefik-v2-file-provider.json
+
+http:
+  middlewares:
+    apps-middleware:
+      stripPrefixRegex:
+        regex:
+          - "/apps/[A-Za-z0-9]+"
+    catchall-redirect:
+      redirectRegex:
+        regex: ^(https?):\/\/([a-zA-Z0-9.-]+)
+        replacement: ${0}/workbench
+    docs-redirect:
+      redirectRegex:
+        regex: ^(https?:\/\/[a-zA-Z0-9.-]+)(\/.*)$
+        replacement: ${1}/workbench/docs/
+        permanent: true
+    proxy-auth:
+      chain:
+        middlewares:
+          - traefik-forward-auth@docker
+          - workbench-proxy-auth@docker
+
+
+  routers:
+    catchall:
+      entryPoints:
+        - "websecure"
+      rule: Path(`/`)
+      priority: 1
+      service: noop@internal
+      middlewares:
+        - "catchall-redirect"
+    docs:
+      entryPoints:
+        - "websecure"
+      rule: Path(`/docs/`)
+      priority: 1
+      service: noop@internal
+      middlewares:
+        - "docs-redirect"
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /cert/cert.pem
+        keyFile: /cert/key.pem

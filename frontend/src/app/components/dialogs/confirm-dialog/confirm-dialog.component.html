@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{data.title}}</h2>
+<div mat-dialog-content>
+  <div [innerHTML]="data.message"></div>
+</div>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+  <button mat-button (click)="onClose()">Cancel</button>
+  <span fxFlex='1 1 auto'></span>
+  <ng-container *ngIf="data.extraActions && data.extraActions.length > 0">
+
+    <button
+      *ngFor="let action of data.extraActions"
+      mat-raised-button
+      (click)="onSubmit(action.value)"
+      [color]="action.color"
+    >
+      {{action.button}}
+    </button>
+
+  </ng-container>
+  
+  <button mat-raised-button cdkFocusInitial (click)="onSubmit('submit')" [color]="data.color">{{data.submitButton}}</button>
+</div>

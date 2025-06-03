@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Commit</h2>
+<div mat-dialog-content>
+  <mat-form-field style="width: 100%;">
+    <mat-label>Commit message</mat-label>
+    <textarea matInput #input rows="10"></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+  <button mat-button (click)="onClose()">Cancel</button>
+  <span fxFlex='1 1 auto'></span>
+  <button mat-raised-button cdkFocusInitial (click)="onSubmit(input.value)" color="primary">Commit</button>
+</div>
+

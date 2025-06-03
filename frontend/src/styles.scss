@@ -1,0 +1,161 @@
+/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+@use "src/app/golden-layout/golden-layout-custom-light.scss" as gl;
+@use "src/app/code-editor/file-tree/file-tree.component.scss" as file-tree;
+@use "src/app/code-editor/preview-frame/browser-frame/browser-frame.component.scss" as browser-frame;
+@use "src/app/material/angular-tree.scss" as angular-tree;
+@use "src/app/material/splash.scss" as splash;
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+@import "src/app/material/theme.scss";
+@import "~golden-layout/dist/css/goldenlayout-base.css";
+@import "~@circlon/angular-tree-component/css/angular-tree-component.css";
+@import "src/app/material/material.scss";
+
+// Plus imports for other components in your app.
+
+@include mat.core();
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: #003243;
+  border-radius: 15px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #126580;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: inset 30px 10px 30px #f0f0f0;
+}
+
+.xterm-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.xterm {
+  padding: 10px;
+}
+
+.snackbar {
+  white-space: pre-wrap;
+}
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+
+.dark-theme {
+  @include mat.all-component-themes($dark-theme);
+  @include gl.theme($dark-theme);
+  @include file-tree.theme($dark-theme);
+  @include browser-frame.theme($dark-theme);
+  @include angular-tree.theme($dark-theme);
+  @include splash.theme($dark-theme);
+}
+
+.light-theme {
+  @include mat.all-component-themes($light-theme);
+  @include gl.theme($light-theme);
+  @include file-tree.theme($light-theme);
+  @include browser-frame.theme($light-theme);
+  @include angular-tree.theme($light-theme);
+  @include splash.theme($light-theme);
+}
+
+/* fallback */
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src: url(assets/fonts/material-icons.woff2) format("woff2");
+}
+
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(assets/fonts/roboto-ext300.woff2) format("woff2");
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(assets/fonts/roboto300.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/roboto-ext500.woff2) format("woff2");
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/roboto500.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/roboto-ext400.woff2) format("woff2");
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/roboto400.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

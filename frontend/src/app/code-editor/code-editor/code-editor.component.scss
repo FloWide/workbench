@@ -1,0 +1,22 @@
+
+:host {
+    height: 100%;
+    width: 100%;
+}
+
+ngx-monaco-editor {
+    height: 100%;
+    width: 100%;
+}
+
+.modified {
+    background-color: #1a1a1a;
+    background-image: none !important;
+    border-radius: 100% 100%;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

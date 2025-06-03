@@ -1,0 +1,28 @@
+services:
+  {{ name }}:
+    run: npm
+    cliArgs: ["run", "start", "--", "--port", "8000"]
+    proxy: true
+    port: 8000
+
+
+setup: 
+    setupScript: npm install
+
+build:
+    cmd: npm install && npm run build
+
+
+development:
+    ignore: |
+        .git
+        node_modules
+        .next
+    languageService:
+        typescript: 
+            cmd: typescript-language-server --stdio
+            languages:
+                - typescript
+                - javascript
+                - jsx
+                - tsx

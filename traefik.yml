@@ -1,0 +1,21 @@
+## traefik.yml
+log:
+  level: DEBUG
+# Docker configuration backend
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: services-network
+
+  redis:
+     endpoints:
+         - "redis-broker:6379"
+  file:
+    directory: /dynamic
+    filename: traefik_dynamic.yml
+    watch: false
+
+# API and dashboard configuration
+api:
+  insecure: true

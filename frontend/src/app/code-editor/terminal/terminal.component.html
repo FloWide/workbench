@@ -1,0 +1,15 @@
+
+<base-term class="term" (ready)="onReady($event)"></base-term>
+
+<ng-template #tabTemplate let-container="container" let-title="title">
+    <div class="tab" [matContextMenuTriggerFor]="menu">
+        <span [class.active]="active" [class.exited-success]="!active && exitCode === 0" [class.exited-error]="!active && exitCode !== 0" ><i class="fa-solid fa-terminal" style="margin: 0 5px 0 5px"></i></span>
+        <span class="lm_title" (click)="container.focus()">{{ (appName$ | async) || title}}</span>
+        <div class="lm_close_tab" (click)="container.close()"></div>
+    </div>
+</ng-template>
+
+
+<mat-menu #menu>
+    <button mat-menu-item (click)="stop()">Stop</button>
+</mat-menu>

@@ -1,0 +1,21 @@
+:host {
+    position: absolute;
+}
+
+.active {
+    color: #00897B;
+}
+
+.exited-success {
+    color: #3F51B5;
+}
+
+.exited-error {
+    color: #D32F2F;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -1,0 +1,275 @@
+# dev docker compose setup
+version: '2'
+services:
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik_dynamic.yml:/dynamic/traefik_dynamic.yml
+    ports:
+      - 80:80
+      - 8080:8080
+    labels:
+      traefik.enable: true
+      traefik.http.routers.proxy.rule: "Host(`proxy.localhost`)"
+      traefik.http.routers.proxy.service: api@internal
+      traefik.http.routers.proxy.middlewares: traefik-forward-auth,workbench-proxy-auth
+      net.flowide.workbench.show_in_workbench: '1'
+    networks:
+      services-network:
+        ipv4_address: 192.168.10.1
+      apps-network:
+        ipv4_address: 192.168.2.1
+
+  app-db:
+    image: postgres:15
+    container_name: app-db
+    environment:
+      POSTGRES_USER: god
+      POSTGRES_PASSWORD: dog
+      POSTGRES_DB: workbench_dev
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.2
+
+  keycloak-db:
+    image: postgres:15
+    container_name: keycloak-db
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak_dev
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.3
+
+  keycloak-init:
+    image: curlimages/curl
+    container_name: keycloak-init
+    user: root
+    command:
+      - sh
+      - -c
+      - |
+        curl -L \
+          https://github.com/FloWide/keycloak-webhook/releases/download/v0.2.0/keycloak-webhook-0.2.0.jar \
+          -o /providers/keycloak-webhook-0.2.0.jar \
+        && chown 1000:1000 /providers/keycloak-webhook-0.2.0.jar
+    volumes:
+      - keycloak_providers:/providers
+    labels:
+      net.flowide.workbench.show_in_workbench: '1'
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.4
+
+  keycloak:
+    image: docker.io/bitnami/keycloak:22
+    container_name: keycloak
+    depends_on:
+      keycloak-db: 
+        condition: service_started
+      keycloak-init:
+          condition: service_completed_successfully
+    environment:
+      KEYCLOAK_DATABASE_NAME: keycloak_dev
+      KEYCLOAK_DATABASE_USER: keycloak
+      KEYCLOAK_DATABASE_PASSWORD: keycloak
+      KEYCLOAK_PRODUCTION: false
+      KEYCLOAK_DATABASE_HOST: keycloak-db
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 80
+      KC_HOSTNAME: auth.localhost
+      KC_HOSTNAME_STRICT: false
+      KC_HEALTH_ENABLED: true
+      WEBHOOK_HTTP_BASE_PATH: http://workbench_backend:8000/webhooks/idp
+    healthcheck:
+      test: ["CMD", "curl","-f","http://localhost/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - keycloak_providers:/opt/bitnami/keycloak/providers
+    labels:
+      traefik.enable: true
+      traefik.http.routers.keycloak.rule: "Host(`auth.localhost`) || Host(`auth.flowide.net`)"
+      traefik.http.services.keycloak.loadbalancer.server.port: 80
+      net.flowide.workbench.show_in_workbench: '1'
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.5
+
+  keycloak-config:
+    image: bitnami/keycloak-config-cli:5.9.0
+    container_name: keycloak-config
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      KEYCLOAK_URL: http://keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_AVAILABILITYCHECK_ENABLED: false
+      KEYCLOAK_AVAILABILITYCHECK_TIMEOUT: 120s
+      IMPORT_FILES_LOCATIONS: /config/dev-keycloak.yml
+      IMPORT_VAR-SUBSTITUTION_ENABLED: true
+    volumes:
+      - ./dev-keycloak.yml:/config/dev-keycloak.yml
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.6
+
+  workbench_backend:
+    container_name: workbench_backend
+    image: nikolaik/python-nodejs:python3.11-nodejs20-bullseye
+    working_dir: /backend
+    privileged: true
+    pid: 'host'
+    depends_on:
+      app-db:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    environment:
+      DB_URI: postgresql+asyncpg://god:dog@app-db:5432/workbench_dev
+      KEYCLOAK_REALM_URL: http://keycloak/realms/workbench
+      KEYCLOAK_OIDC_URL: http://auth.localhost/realms/workbench/.well-known/openid-configuration
+      WEBHOOK_SECRET: lali
+      REPOSITORIES_ROOT: ${HOME}/workbench2_repos
+    command: > 
+      bash -c "git config --global --add safe.directory '*' && poetry install && 
+              poetry run alembic upgrade head &&
+              poetry run uvicorn workbench_backend:app --host 0.0.0.0 --reload"
+    volumes:
+      - ./backend:/backend
+      - ${HOME}/workbench2_repos:${HOME}/workbench2_repos
+      - /var/run/docker.sock:/var/run/docker.sock
+      - app_logos:/app_logos
+    labels:
+      traefik.enable: true
+      traefik.http.routers.backend.rule: "Host(`api.localhost`)"
+      traefik.http.services.backend.loadbalancer.server.port: 8000
+      traefik.http.middlewares.workbench-proxy-auth.forwardauth.address: http://workbench_backend:8000/webhooks/proxy_auth
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.7
+      apps-network:
+        ipv4_address: 192.168.2.2
+  
+
+  redis-broker:
+    image: redis:latest
+    restart: unless-stopped
+    container_name: redis-broker
+    command: redis-server --notify-keyspace-events AKE
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.9
+
+  celery_worker:
+    container_name: celery_worker
+    image: nikolaik/python-nodejs:python3.11-nodejs20-bullseye
+    working_dir: /backend
+    depends_on:
+      app-db:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+      redis-broker:
+        condition: service_started
+    environment:
+      DB_URI: postgresql+asyncpg://god:dog@app-db:5432/workbench_dev
+      KEYCLOAK_REALM_URL: http://keycloak/realms/workbench
+      KEYCLOAK_OIDC_URL: http://auth.localhost/realms/workbench/.well-known/openid-configuration
+      ENV: CELERY
+      REPOSITORIES_ROOT: ${HOME}/workbench2_repos
+    command: > 
+      bash -c "git config --global --add safe.directory '*' && poetry install &&
+              poetry run celery -A workbench_backend.celery_tasks.celery_app worker --loglevel=DEBUG"
+    volumes:
+      - ./backend:/backend
+      - ${HOME}/workbench2_repos:${HOME}/workbench2_repos
+      - /var/run/docker.sock:/var/run/docker.sock
+      - app_logos:/app_logos
+    labels:
+      traefik.enable: false
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.8
+      apps-network:
+        ipv4_address: 192.168.2.3
+
+
+  frontend:
+    container_name: workbench_frontend
+    image: nikolaik/python-nodejs:python3.10-nodejs20
+    working_dir: /frontend
+    command: bash -c "npm install --legacy-peer-deps && npx ng serve --host 0.0.0.0 --disable-host-check"
+    volumes:
+      - ./frontend:/frontend
+    environment:
+        NODE_OPTIONS: "--max_old_space_size=8048"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.frontend.rule: "Host(`app.localhost`)"
+      traefik.http.services.frontend.loadbalancer.server.port: 4200
+      traefik.http.routers.frontend.middlewares: traefik-forward-auth
+    networks:
+      services-network:
+          ipv4_address: 192.168.10.10
+
+  forwardauth:
+    image: mesosphere/traefik-forward-auth
+    container_name: traefik-forwardauth
+    restart: unless-stopped
+    links:
+      - "keycloak:auth.localhost"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+    networks:
+      services-network:
+    environment:
+      - SECRET=06e701c943c74636be7d948d02e32cb3
+      - PROVIDER_URI=http://auth.localhost/realms/workbench
+      - CLIENT_ID=workbench-api
+      - CLIENT_SECRET=9c9438674b46485da1f61de1b63bcbab
+      - ENCRYPTION_KEY=7e91d3dcd6234b77b476387bd985e517
+      - COOKIE_DOMAIN=.localhost
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=services-network"
+      - "traefik.http.services.forwardauth.loadbalancer.server.port=4181"
+      - "traefik.http.routers.forwardauth.rule=Path(`/_oauth`)"
+      - "traefik.http.routers.forwardauth.middlewares=traefik-forward-auth"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://forwardauth:4181"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+      - "traefik.http.middlewares.traefik-forward-auth.forwardauth.trustForwardHeader=true"
+
+volumes:
+  keycloak_providers: #
+  repos: #
+  app_logos: #
+
+networks:
+  services-network:
+    driver: bridge
+    name: services-network
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.254
+  apps-network:
+    driver: bridge
+    name: apps-network
+    ipam:
+      config:
+        - subnet: 192.168.2.0/24
+          gateway: 192.168.2.254

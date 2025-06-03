@@ -1,0 +1,26 @@
+.status {
+    width:1em;
+    height:1em;
+    background: red;
+    border-radius: 50%;
+    border: 1px solid grey;
+    margin: 0.5em;
+    display: inline-block;
+}
+
+.service-button {
+    flex-basis: 0;
+    margin: 0.5em 0 0.5em 0;
+    .mat-expansion-panel-header-description {
+        justify-content: flex-end;
+        align-items: center;
+    }
+    ::ng-deep .mat-expansion-panel-content{
+        .mat-expansion-panel-body{
+            padding: 0 !important;
+            width: 100% !important;
+        }
+    }    
+}
+
+

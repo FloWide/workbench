@@ -1,0 +1,16 @@
+<div class="browser-frame">
+    <div class="browser-frame__top">
+        <button mat-icon-button (click)="refreshClick.emit()" title="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-icon-button (click)="popout.emit()" title="Popout" [disabled]="state !== 'active'">
+            <mat-icon>launch</mat-icon>
+        </button>
+        <div>Script state: {{state | titlecase}}</div>
+    </div>
+    <div
+      class="browser-frame__body"
+    >
+        <ng-content></ng-content>
+    </div>
+</div>

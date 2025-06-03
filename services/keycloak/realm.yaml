@@ -1,0 +1,189 @@
+
+
+# General realm config
+id: $(env:SERVER)
+realm: $(env:SERVER)
+defaultSignatureAlgorithm: RS256
+accessTokenLifespan: 86400
+accessTokenLifespanForImplicitFlow: 86400
+ssoSessionIdleTimeout: 86400
+enabled: true
+loginWithEmailAllowed: true
+loginTheme: fw_keycloak
+
+clientScopes:
+  - name: groups
+    protocol: openid-connect
+
+# Clients
+clients:
+  # API
+  - clientId: workbench-api   
+    enabled: true
+    bearerOnly: true
+    publicClient: false
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: true
+    webOrigins:
+      - "*"
+    redirectUris:
+      - "*"
+  # Flowide sso
+  - clientId: flowide
+    secret: $(env:FLOWIDE_OIDC_CLIENT_SECRET)
+    rootUrl: https://$(env:SERVER).$(env:DOMAIN)/
+    baseUrl: https://$(env:SERVER).$(env:DOMAIN)/
+    bearerOnly: false
+    publicClient: false
+    clientAuthenticatorType: client-secret
+    enabled: true
+    webOrigins:
+      - https://$(env:SERVER).$(env:DOMAIN)
+    redirectUris:
+      - https://$(env:SERVER).$(env:DOMAIN)/*
+    defaultClientScopes:
+        - web-origins
+        - acr
+        - roles
+        - profile
+        - groups
+        - email
+
+  # WORKBENCH  
+  - clientId: flowide-workbench
+    rootUrl: https://$(env:SERVER).$(env:DOMAIN)/workbench
+    baseUrl: https://$(env:SERVER).$(env:DOMAIN)/workbench
+    enabled: true
+    publicClient: true
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: true
+    webOrigins:
+      - https://$(env:SERVER).$(env:DOMAIN)
+    redirectUris:
+      - "https://$(env:SERVER).$(env:DOMAIN)/*"
+    attributes:
+      post.logout.redirect.uris: "https://$(env:SERVER).$(env:DOMAIN)/*"
+
+
+# Roles (permissions)
+roles:
+  realm:
+    - name: default-roles-$(env:SERVER)
+      composite: true
+      composites:
+        realm:
+          - offline_access
+          - uma_authorization
+        client: 
+          workbench-api:
+            - run:script
+          account:
+            - view-profile
+            - manage-account
+  client:
+    workbench-api:
+      - name: create:repo
+        composite: false
+        clientRole: true
+      - name: edit:repo
+        composite: false
+        clientRole: true
+      - name: read:user
+        composite: false
+        clientRole: true
+      - name: create:release
+        composite: false
+        clientRole: true
+      - name: manage:service
+        composite: false
+        clientRole: true
+      - name: delete:repo
+        composite: false
+        clientRole: true
+      - name: fork:repo
+        composite: false
+        clientRole: true
+      - name: run:script
+        composite: false
+        clientRole: true
+      - name: read:public-http
+        composite: false
+        clientRole: true
+      - name: write:public-http
+        composite: false
+        clientRole: true
+      - name: read:private-http
+        composite: false
+        clientRole: true
+      - name: write:private-http
+        composite: false
+        clientRole: true
+      - name: read:shared-files
+        composite: false
+        clientRole: true
+      - name: write:shared-files
+        composite: false
+        clientRole: true
+      - name: god
+        description: Gives root access in container and gives R/W to the docker socket.
+        composite: false
+        clientRole: true
+      - name: network-access:devices-network
+        composite: false
+        clientRole: true
+      - name: network-access:deployment
+        composite: false
+        clientRole: true
+      - name: admin
+        composite: false
+        clientRole: true
+
+users:
+  - username: apps-admin
+    enabled: true
+    email: apps-admin@flowide.net
+    firstName: Apps
+    lastName: Admin
+    credentials:
+      - type: password
+        value: $(env:APPS_ADMIN_PASSWORD)
+        temporary: false
+    clientRoles:
+      workbench-api:
+        - create:repo
+        - edit:repo
+        - read:user
+        - create:release
+        - manage:service
+        - delete:repo
+        - fork:repo
+        - run:script
+        - read:public-http
+        - write:public-http
+        - read:shared-files
+        - write:shared-files
+        - read:private-http
+        - write:private-http
+        - network-access:deployment
+        - network-access:devices-network
+        - admin
+      realm-management:
+        - create-client
+        - impersonation
+        - manage-authorization
+        - manage-clients
+        - manage-events
+        - manage-identity-providers
+        - manage-realm
+        - manage-users
+        - query-clients
+        - query-groups
+        - query-realms
+        - query-users
+        - realm-admin
+        - view-authorization
+        - view-clients
+        - view-events
+        - view-identity-providers
+        - view-realm
+        - view-users

@@ -1,0 +1,35 @@
+
+<h1>Search</h1>
+<mat-form-field style="width: 100%" appearance="fill">
+    <mat-label>Search</mat-label>
+    <input matInput placeholder="Search..." #search autocomplete="off" [matAutocomplete]="auto" [formControl]="inputField">
+    <button matSuffix mat-icon-button (click)="onSearch()">
+        <mat-icon fontSet="fa" fontIcon="fa-magnifying-glass"></mat-icon>
+    </button>
+</mat-form-field>
+
+
+<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSearch()">
+    <mat-option [value]="item" *ngFor="let item of repos$ | async | keyfilter:search.value">
+        <div class="auto-complete-element">
+            <mat-icon fontSet="fa-solid" fontIcon="fa-code"></mat-icon>
+            {{item.name}} &nbsp;
+            <small>Repo</small>
+        </div>
+    </mat-option>
+    <mat-option *ngFor="let item of scripts$ | async | keyfilter:search.value" [value]="item">
+        <div class="auto-complete-element">
+            <mat-icon *ngIf="item?.type === 'streamlit' " fontSet="fa" fontIcon="fa-window-maximize"></mat-icon>
+            <mat-icon *ngIf="item?.type === 'python'" fontSet="fa" fontIcon="fa-terminal"></mat-icon>
+            {{item.name}} / {{item.id}} &nbsp;
+            <small>App</small>
+        </div>
+    </mat-option>
+    <mat-option *ngFor="let item of services$ | async | keyfilter:search.value" [value]="item">
+        <div class="auto-complete-element">
+            <mat-icon fontSet="fa-solid" fontIcon="fa-bars-progress"></mat-icon>
+            {{item.name}} / {{item.id}} &nbsp;
+            <small>Service</small>
+        </div>
+    </mat-option>
+</mat-autocomplete>

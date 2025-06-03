@@ -1,0 +1,60 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+
+/*
+.angular-tree-component
+.angular-tree-component-rtl
+.tree-node
+.tree-node-wrapper
+.tree-node-expanded
+.tree-node-collapsed
+.tree-node-focused
+.tree-node-active
+.tree-node-level-X
+.tree-node-leaf
+.node-wrapper
+.toggle-children-wrapper
+.toggle-children
+.toggle-children-placeholder
+.node-content-wrapper
+.tree-children
+.tree-node-loading
+.node-drop-slot
+.is-dragging-over
+.is-dragging-over-disabled
+*/
+
+@mixin theme($theme) {
+    $color-config: mat.get-color-config($theme);
+
+    $is-dark-theme: map.get($color-config, is-dark);
+
+    $background: map.get($color-config, "background");
+
+    $foreground: map.get($color-config, "foreground");
+
+    $primary: map.get($color-config, primary);
+
+    .node-content-wrapper {
+        box-sizing: border-box;
+        display: block;
+        background: transparent;
+    }
+
+    .node-content-wrapper:not(.node-content-wrapper-active):not(.node-content-wrapper-focused):hover {
+        background: map.get($background,focused-button);
+    }
+
+    .node-content-wrapper-active{
+        background: rgba(mat.get-color-from-palette($primary, 500),1);
+    }
+
+    .node-content-wrapper-active:hover {
+        background: rgba(mat.get-color-from-palette($primary, 300),1);
+    }
+
+    .node-content-wrapper-focused {
+        border: 1px solid mat.get-color-from-palette($primary, 500);
+    }
+}

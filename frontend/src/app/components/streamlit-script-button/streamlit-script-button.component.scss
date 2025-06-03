@@ -1,0 +1,27 @@
+.button-container {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 10px;
+    .script-button {
+        width: 80%;
+        height: 80%;
+        display: block;
+        margin: 0 auto;
+        text-align: center;
+        text-overflow: ellipsis;
+    }
+    img {
+        width: 80%;
+        height: 80%;
+        position: absolute;
+        top: 10%;
+        left:10%;
+        border-radius: 50%;
+    }
+}

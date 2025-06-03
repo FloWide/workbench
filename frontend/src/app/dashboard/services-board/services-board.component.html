@@ -1,0 +1,31 @@
+
+<div style="padding: 1em;">
+    <div *requiresPermissions="['admin']">
+        <h1>Platform Services</h1>
+        <platform-services></platform-services>
+    </div>
+
+
+    <div>
+        <h1>Services</h1>
+        <mat-accordion>
+            <app-service-button
+                *ngIf="filteredService"
+                [services]="filteredServiceValue"
+            >
+            </app-service-button>
+            <ng-container *ngIf="!filteredService">
+                <app-service-button
+                    *ngFor="let item of services | keyvalue; trackBy: trackBy"
+                    [services]="item.value"
+                >
+                </app-service-button>
+            </ng-container>
+        </mat-accordion>
+        <ng-container *ngIf="filteredService">
+            <button mat-stroked-button (click)="filteredService = null">
+                Show all
+            </button>
+        </ng-container>
+    </div>
+</div>

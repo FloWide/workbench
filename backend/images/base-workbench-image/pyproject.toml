@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "smart-runner"
+version = "0.1.0"
+description = ""
+authors = ["Balázs Görzsöny <bgorzsony@gmail.com>"]
+packages = [{include = "smart_runner"}]
+
+[tool.poetry.scripts]
+run = 'smart_runner.runner:main'
+build = 'smart_runner.builder:main'
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+pyyaml = "^6.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

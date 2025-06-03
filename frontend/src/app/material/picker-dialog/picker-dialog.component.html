@@ -1,0 +1,20 @@
+<div>
+    
+    <mat-form-field appearance="fill" class="form-field">
+        <mat-label>{{data?.placeholder}}</mat-label>
+        <input
+            #input
+            type="text"
+            [placeholder]="data?.placeholder"
+            matInput
+            [matAutocomplete]="auto"
+            (change)="onValueChanged(input.value)"
+        >
+        <mat-icon matSuffix>arrow_drop_down</mat-icon>
+    </mat-form-field>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onValueChanged($event.option.value)">
+        <mat-option *ngFor="let option of data?.options" [value]="option">
+        {{option}}
+        </mat-option>
+    </mat-autocomplete>
+</div>

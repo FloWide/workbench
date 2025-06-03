@@ -1,0 +1,274 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+$close-img-path-black: "~golden-layout/dist/img/lm_close_black.png";
+$maximize-img-path-black: "~golden-layout/dist/img/lm_maximise_black.png";
+$minimize-img-path-black: "~golden-layout/dist/img/lm_minimize_black.png";
+$popout-img-path-black: "~golden-layout/dist/img/lm_popout_black.png";
+$popin-img-path-black: "~golden-layout/dist/img/lm_minimize_black.png";
+
+$close-img-path-white: "~golden-layout/dist/img/lm_close_white.png";
+$maximize-img-path-white: "~golden-layout/dist/img/lm_maximise_white.png";
+$minimize-img-path-white: "~golden-layout/dist/img/lm_minimize_white.png";
+$popout-img-path-white: "~golden-layout/dist/img/lm_popout_white.png";
+$popin-img-path-white: "~golden-layout/dist/img/lm_minimize_white.png";
+
+@mixin theme($theme) {
+  $color-config: mat.get-color-config($theme);
+
+  $primary: map.get($color-config, "primary");
+
+  $background: map.get($color-config, background);
+  $foreground: map.get($color-config, foreground);
+
+  $is-dark-theme: map.get($color-config, "is-dark");
+
+  .lm_goldenlayout {
+    background: map.get($background, background);
+  }
+
+  .lm_content {
+    background: map.get($background, background);
+  }
+
+  .lm_dragProxy .lm_content {
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .lm_dropTargetIndicator {
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
+    outline: 1px dashed #ccc;
+    margin: 1px;
+    transition: all 200ms ease;
+  }
+
+  .lm_dropTargetIndicator .lm_inner {
+    background: #000;
+    opacity: 0.1;
+    filter: alpha(opacity=1);
+  }
+
+  .lm_splitter {
+    background: map.get($background, status-bar);
+    transition: opacity 200ms ease;
+  }
+
+  .lm_splitter:hover {
+    opacity: 1;
+    background: mat.get-color-from-palette($primary, 500);
+  }
+
+  .lm_header {
+    height: 20px;
+    background: map.get($background, app-bar) !important;
+  }
+
+  .lm_header.lm_selectable {
+    cursor: pointer;
+  }
+
+  .lm_selected .lm_header {
+    background-color: #452500;
+  }
+
+  .lm_maximised .lm_header {
+    background-color: inherit;
+  }
+
+  .lm_header .lm_tab {
+    background: map.get($background, card);
+    color: map.get($foreground, base);
+
+    font-family: "Roboto", sans-serif;
+    margin-right: 2px;
+    border-bottom: 1px solid map.get($background, hover);
+  }
+
+  .lm_header .lm_tab .lm_title {
+    padding-top: 1px;
+    padding-right: 5px;
+  }
+
+  .lm_header {
+    margin: 0px !important;
+  }
+
+  .lm_tab.lm_active {
+    border-bottom: 2px solid mat.get-color-from-palette($primary, 500) !important;
+  }
+
+  .lm_tab.lm_active,
+  .lm_tab:hover {
+    color: map.get($foreground, base);
+    background: map.get($background, card) !important;
+  }
+
+  .lm_tab {
+    display: flex;
+    background: map.get($background, hover) !important;
+    align-items: center;
+    padding: 10px 20px 10px 20px !important;
+  }
+
+  .lm_items {
+    background: map.get($background, background);
+  }
+
+  .lm_header {
+    background: #fff;
+    padding-bottom: 16px;
+  }
+
+  .lm_header .lm_tab.lm_active {
+    border-bottom: none;
+  }
+
+  .lm_header .lm_tab .lm_close_tab {
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0.2;
+    filter: alpha(opacity=40);
+    width: 11px;
+    height: 11px;
+    position: relative;
+    background-repeat: no-repeat;
+  }
+  .lm_header:hover .lm_tab:hover .lm_close_tab:hover {
+    opacity: 1;
+  }
+
+  .lm_header .lm_tab .lm_close_tab:hover,
+  .lm_header .lm_tab.lm_active .lm_close_tab {
+    opacity: 0.5;
+    filter: alpha(opacity=100);
+  }
+
+  .lm_controls > div {
+    background-position: center center;
+    background-repeat: no-repeat;
+    position: relative;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+    -webkit-transition: opacity 300ms ease;
+    -o-transition: opacity 300ms ease;
+    -ms-transition: opacity 300ms ease;
+    -moz-transition: opacity 300ms ease;
+    transition: opacity 300ms ease;
+  }
+
+  .lm_controls > div:hover {
+    opacity: 1;
+    filter: alpha(opacity=100);
+  }
+
+  .lm_transition_indicator {
+    background-color: #000;
+    border: 1px dashed #555;
+  }
+
+  .lm_popin {
+    cursor: pointer;
+  }
+
+  .lm_popin .lm_bg {
+    background: #000;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+  }
+
+  .lm_popin .lm_icon {
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+  }
+
+  .lm_popin:hover .lm_icon {
+    opacity: 1;
+    filter: alpha(opacity=100);
+  }
+
+
+  .lm_column {
+    position: relative;
+    counter-increment: number;
+  }
+
+  .lm_column:empty:before {
+    content:"";
+    background-image:url('../../assets/badge-brand-light.svg');
+    background-size: 400px 400px;
+    position: absolute;
+    height: 400px;
+    width: 400px;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    overflow: hidden;
+  }
+
+  .lm_column:empty:after {
+    content:"Workspace #"counter(number);
+    position: absolute;
+    top:calc(50% + 180px);
+    color:grey;
+    left:50%;
+    transform: translate(-50%,-50%);
+    overflow: hidden;
+  }
+
+  @include icons($is-dark-theme);
+}
+
+@mixin icons($is-dark) {
+  @if $is-dark {
+    .lm_controls .lm_popout {
+      background-image: url($popout-img-path-white);
+    }
+
+    .lm_controls .lm_maximise {
+      background-image: url($maximize-img-path-white);
+    }
+
+    .lm_maximised .lm_controls .lm_maximise {
+      background-image: url($minimize-img-path-white);
+    }
+
+    .lm_controls .lm_close {
+      background-image: url($close-img-path-white);
+    }
+
+    .lm_header .lm_tab .lm_close_tab {
+      background-image: url($close-img-path-white);
+    }
+
+    .lm_popin .lm_icon {
+      background-image: url($popin-img-path-white);
+    }
+  }
+  @else {
+    .lm_controls .lm_popout {
+      background-image: url($popout-img-path-black);
+    }
+
+    .lm_controls .lm_maximise {
+      background-image: url($maximize-img-path-black);
+    }
+
+    .lm_maximised .lm_controls .lm_maximise {
+      background-image: url($minimize-img-path-black);
+    }
+
+    .lm_controls .lm_close {
+      background-image: url($close-img-path-black);
+    }
+
+    .lm_header .lm_tab .lm_close_tab {
+      background-image: url($close-img-path-black);
+    }
+
+    .lm_popin .lm_icon {
+      background-image: url($popin-img-path-black);
+    }
+  }
+}

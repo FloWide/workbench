@@ -1,0 +1,27 @@
+.menu-item {
+    line-height: 20px;
+    height: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    min-width: 250px;
+    mat-icon {
+        margin: 2px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+::ng-deep .mat-menu-panel {
+    min-height: fit-content !important;
+}
+
+.pale {
+    opacity: 0.3;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}

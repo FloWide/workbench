@@ -1,0 +1,17 @@
+{
+    "name": "Backend Container",
+    "dockerComposeFile": ["../../docker-compose.dev.yml","../docker-compose.devcontainer.yml"],
+    "service": "workbench_backend",
+    "shutdownAction": "none",
+    "workspaceFolder": "/workspace/backend",
+    "overrideCommand": true,
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "charliermarsh.ruff",
+                "matangover.mypy"
+            ]
+        }
+    }
+}

@@ -1,0 +1,101 @@
+[tool.poetry]
+name = "workbench-backend"
+version = "2.0.0"
+description = ""
+authors = ["Balázs Görzsöny <bgorzsony@gmail.com>"]
+readme = "README.md"
+packages = [{include = "workbench_backend"}]
+
+[tool.poetry.dependencies]
+python = "~3.11"
+fastapi = "^0.109.2"
+uvicorn = {extras = ["standard"], version = "^0.27.0.post1"}
+loguru = "^0.7.2"
+pydantic-settings = "^2.1.0"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.25"}
+asyncpg = "0.27.0"
+six = "^1.16.0"
+overrides = "^7.7.0"
+alembic = "^1.13.1"
+pygit2 = "^1.14.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+aiohttp = "^3.9.3"
+aiodocker = "0.24.0"
+nsenter = "^0.2"
+deepdiff = "^6.7.1"
+python-magic = "^0.4.27"
+aiofiles = "^23.2.1"
+tenacity = "^8.2.3"
+redis = "^5.0.3"
+jinja2 = "^3.1.3"
+celery = {extras = ["redis"], version = "^5.3.6"}
+celery-types = "^0.22.0"
+pyyaml = "^6.0.1"
+httpx = "0.23.3"
+aiocache = {extras = ["redis"], version = "^0.12.2"}
+python-multipart = "^0.0.20"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+mypy = "^1.8.0"
+ruff = "^0.2.1"
+pytest-asyncio = "^0.23.4"
+pytest-env = "^1.1.3"
+taskipy = "^1.12.2"
+pytest-cov = "^4.1.0"
+types-python-jose = "^3.3.4.20240106"
+types-pyyaml = "^6.0.12.20240311"
+types-aiofiles = "^23.2.0.20240403"
+
+[tool.pytest.ini_options]
+testpaths = [ "tests" ]
+asyncio_mode="strict"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore: Field name"
+]
+env = [
+ "ENV=TEST",
+]
+
+[tool.mypy]
+strict = true
+plugins = [
+  "pydantic.mypy"
+]
+packages ="workbench_backend, tests"
+disable_error_code="misc"
+untyped_calls_exclude="aiodocker, aiocache"
+exclude = "templates/_repository_templates/*"
+
+[tool.ruff]
+exclude = [
+  "alembic/versions",
+  "images/**"
+]
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+
+[tool.taskipy.tasks]
+test = "pytest"
+lint = "task lint_ruff && task lint_mypy"
+lint_ruff = "ruff check"
+lint_mypy = "mypy"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

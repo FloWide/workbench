@@ -1,0 +1,12 @@
+{
+    "api":{
+        "api":"http://api.localhost",
+        "streamlit_apps":"https://dev3-gw.flowide.net/streamlit-cloud"
+    },
+    "dcm_connections":[
+        {
+            "location_name": "dev3-GW",
+            "api_base_url": "https://dev3-gw.flowide.net"
+        }
+    ]
+}

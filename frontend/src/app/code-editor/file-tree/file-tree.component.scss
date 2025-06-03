@@ -1,0 +1,45 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+:host {
+    width: 100%;
+    height: 600px;
+    // background-color: white;
+    display: block;
+    min-width: 200px;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.git-dirty {
+    color:#ff8c00;
+}
+
+.action-menu-item {
+    line-height:20px;
+    height:20px;
+}
+
+.hidden {
+    opacity: 0.6;
+}
+
+.rename-input {
+    display: inline-block;
+    box-sizing: border-box;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    outline: 0;
+    width: 100%;
+}
+
+@mixin theme($theme) {
+    $color-config: mat.get-color-config($theme);
+    $background: map.get($color-config, background);
+
+    .node-content-wrapper.opened {
+        background: map.get($background,focused-button);
+    }
+}

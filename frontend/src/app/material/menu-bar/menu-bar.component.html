@@ -1,0 +1,22 @@
+
+
+<ng-container *ngFor="let item of setting">
+
+    <ng-container *ngIf="item.children && item.children.length > 0">
+        <button mat-flat-button [matMenuTriggerFor]="menu.childMenu" class="top-level-button">
+            {{item.title}}
+            <mat-icon>arrow_drop_down</mat-icon>
+            <menu-item #menu [setting]="item.children" [parentBar]="menuBar"></menu-item>
+        </button>
+    </ng-container>
+
+    <ng-container *ngIf="!item.children">
+        <button mat-flat-button class="top-level-button">
+            {{item.title}}
+        </button>
+    </ng-container>
+
+</ng-container>
+
+
+  

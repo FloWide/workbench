@@ -1,0 +1,59 @@
+.no-container-dialog {
+    mat-dialog-container {
+        //background: transparent;
+        box-shadow: none;
+        padding: 0;
+    }
+}
+.spin-on-container {
+    position: relative;
+    pointer-events: none;
+}
+
+.drag-over-overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #efefef, $alpha: 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    border: 2px dotted #003243;
+    pointer-events: none;
+    .material-icons {
+        font-size: 5em;
+        animation: bounce 3s 0s both infinite ease-in-out;
+    }
+}
+
+
+.toast-panel  .mat-dialog-container{
+    padding: 0 !important;
+    transition: bottom 0.3s ease; /* Smooth positioning transition */
+    box-shadow: none !important;
+}
+
+@keyframes bounce {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-30px);
+    }
+    60% {
+        transform: translateY(-15px);
+    }
+}
+
+mark {
+    font-style: italic;
+    background-color: lightgray;
+    padding: 3px;
+}

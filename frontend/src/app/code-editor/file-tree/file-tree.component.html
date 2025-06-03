@@ -1,0 +1,146 @@
+
+  <tree-root #tree [nodes]="files" [options]="treeOptions" style="margin-bottom: 5px;" (contextmenu)="onTopLevelMenu($event)">
+    <ng-template #treeNodeTemplate let-node let-index="index">
+        <input
+          class="rename-input"
+          #renameInput 
+          type="text" 
+          [value]="node.data.name" 
+          *ngIf="renamingPath && renamingPath === node.data.path; else elseBlock" 
+          [autofocus]="true"
+          (blur)="stopRenaming()"
+          (keydown.escape)="stopRenaming()"
+          (keydown.enter)="renameFile(node.data.path, renameInput.value)"
+          >
+        <ng-template #elseBlock>
+          <span>
+              {{ node.data.name }}
+          </span>
+        </ng-template>
+        
+      </ng-template>
+
+    <ng-template #loadingTemplate let-node>
+      <mat-progress-bar mode="buffer"></mat-progress-bar>
+      <!--<div [class]="node.data.className + 'Loading'">Loading {{ node.data.name }}...</div>-->
+    </ng-template>
+
+    <ng-template #treeNodeWrapperTemplate let-node let-index="index">
+      <div 
+        class="node-wrapper" 
+        [style.padding-left]="node.getNodePadding()"
+      >
+        <!--<tree-node-expander [node]="node"></tree-node-expander>-->
+
+        <span
+          *ngIf="node.hasChildren"
+          class="toggle-children-wrapper"
+          (click)="node.mouseAction('expanderClick', $event)"
+        >
+          <file-icon [icon]="getIconForNode(node)"></file-icon>
+        </span>
+        <span *ngIf="!node.hasChildren" class="toggle-children-wrapper">
+          <file-icon [icon]="getIconForNode(node)"></file-icon>
+        </span>
+
+        <div
+          class="node-content-wrapper"
+          style="width: 100%;"
+          [class.node-content-wrapper-active]="node.isActive"
+          [class.node-content-wrapper-focused]="node.isFocused"
+          [class.mat-elevation-z8]="renamingPath === node.data.path"
+          [class.opened]="focusedTab?.path === node.data.path"
+          [class.git-dirty]="isGitDirty(node.data.path)"
+          [matContextMenuTriggerFor]="actionMenu"
+          [matMenuTriggerData]="{node:node,tree: tree.treeModel}" 
+          (click)="node.mouseAction('click', $event)"
+          (dblclick)="node.mouseAction('dblClick', $event)"
+          (treeDrop)="node.onDrop($event)"
+          [treeAllowDrop]="node.allowDrop"
+          [treeDrag]="node"
+          [treeDragEnabled]="node.allowDrag()"
+        >
+          <tree-node-content [node]="node" [index]="index" [template]="treeNodeTemplate"></tree-node-content>
+        </div>
+      </div>
+    </ng-template>
+  </tree-root>
+
+<mat-menu #actionMenu>
+  <ng-template
+    matMenuContent
+    let-node="node"
+    let-tree="tree"
+  >
+    <button mat-menu-item class="action-menu-item" [disabled]="tree.activeNodes.length > 1" (click)="onRename(tree,node,$event)">
+      Rename
+    </button>
+    <button mat-menu-item class="action-menu-item" (click)="onMove(tree, node, $event)">
+      Move
+    </button>
+    <button mat-menu-item class="action-menu-item" (click)="onDelete(tree, node, $event)">
+      Delete
+    </button>
+    <hr  >
+    <button
+      *ngIf="node.data.isDirectory"
+      mat-menu-item
+      class="action-menu-item"
+      (click)="onNewFile(tree, node, $event)"
+    >
+      New File
+    </button>
+    <button
+      *ngIf="node.data.isDirectory"
+      mat-menu-item
+      class="action-menu-item"
+      (click)="onNewFolder(tree, node, $event)"
+    >
+      New Folder
+    </button>
+    <button
+      *ngIf="!node.data.isDirectory"
+      mat-menu-item
+      (click)="onRun(tree, node, $event)"
+      class="action-menu-item"
+    >
+      Run
+    </button>
+    <button
+      *ngIf="!node.data.isDirectory"
+      mat-menu-item
+      (click)="openInNewTab(node)"
+      class="action-menu-item"
+    >
+      Open in new tab
+    </button>
+    <button
+      *ngIf="!node.data.isDirectory"
+      mat-menu-item
+      (click)="onDownload(node)"
+      class="action-menu-item"
+    >
+      Download
+    </button>
+  </ng-template>
+</mat-menu>
+
+
+<div style="visibility: hidden; position: fixed"
+        [style.left]="topLevelMenuPosition.x"
+        [style.top]="topLevelMenuPosition.y"
+        [matMenuTriggerFor]="topLevelMenu"
+        #topLevelMenuAnchor
+        >
+  </div>
+
+<mat-menu #topLevelMenu>
+  <button mat-menu-item class="action-menu-item" (click)="onNewFile(null, null, $event)">
+    New file
+  </button>
+
+  <button mat-menu-item class="action-menu-item" (click)="onNewFolder(null, null, $event)">
+    New folder
+  </button>
+
+</mat-menu>

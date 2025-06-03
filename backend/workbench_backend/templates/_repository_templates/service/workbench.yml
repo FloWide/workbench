@@ -1,0 +1,11 @@
+services:
+  {{ name }}:
+    run: main.py
+
+development: 
+  ignore: |
+    .venv
+    .git
+    *.lock
+  languageService:
+    python: pylsp

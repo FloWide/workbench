@@ -1,0 +1,16 @@
+
+
+<div class="container" fxFlex="1 1 auto">
+    <mat-grid-list [cols]="cols" rowHeight="1:1" gutterSize="5em">
+        <mat-grid-tile *ngFor="let item of scripts | keyvalue; trackBy: trackBy" style="padding: 10px;">
+            <app-streamlit-script-button 
+                [scripts]="item.value"
+                (actionClick)="onScriptAction($event)"
+                (scriptClick)="onScriptClicked($event)"
+            >
+            </app-streamlit-script-button>
+        </mat-grid-tile>
+
+    </mat-grid-list>
+
+</div>

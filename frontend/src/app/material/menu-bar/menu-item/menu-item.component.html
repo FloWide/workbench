@@ -1,0 +1,39 @@
+<mat-menu #childMenu="matMenu" [overlapTrigger]="false">
+  <ng-container *ngFor="let child of setting">
+    <!-- Handle branch node menu items -->
+    <ng-container *ngIf="child.children && child.children.length > 0">
+      <button
+        mat-menu-item
+        color="primary"
+        [matMenuTriggerFor]="menu.childMenu"
+        class="menu-item"
+      >
+        <mat-icon></mat-icon>
+        <ng-container>{{ child.title }}</ng-container>
+        <span class="spacer"></span>
+      </button>
+      <menu-item #menu [setting]="child.children" [parentBar]="parentBar"></menu-item>
+    </ng-container>
+    <!-- Handle leaf node menu items -->
+    <ng-container *ngIf="(!child.children || child.children.length === 0) && !child.divider">
+
+    
+      <button mat-menu-item class="menu-item" (click)="parentBar.onMenuClicked(child)">
+        
+        <mat-icon>
+            {{child.checkbox && child.checked ? 'check' : ''}}
+        </mat-icon>
+        <ng-container>{{ child.title }}</ng-container>
+        <span class="spacer"></span>
+        <span class="pale" *ngIf="!!child.keybind">{{child.keybind | uppercase}}</span>
+
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="child.divider">
+      <mat-divider></mat-divider>
+    </ng-container>
+
+
+  </ng-container>
+</mat-menu>

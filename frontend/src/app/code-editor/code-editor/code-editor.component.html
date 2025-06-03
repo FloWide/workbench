@@ -1,0 +1,18 @@
+<monaco-code-editor (onInit)="editorInit($event)" [options]="editorOptions"></monaco-code-editor>
+
+<ng-template #tabTemplate let-container="container" let-title="title">
+    <div class="tab" [matContextMenuTriggerFor]="menu">
+        <div *ngIf="readOnly">
+            <i class="fa-solid fa-lock"></i>
+        </div>
+        <file-icon [icon]="getIconForFile(openedFile.name)" style="height:1em;margin: 0px 5px 0px 5px"></file-icon>
+        <span class="lm_title" (click)="container.focus()">{{title}}</span>
+        <div class="lm_close_tab" [class.modified]="openedFile.modified" (click)="close()"></div>
+    </div>
+</ng-template>
+
+<mat-menu #menu>
+    <button mat-menu-item (click)="run()">Run</button>
+    <hr>
+    <button mat-menu-item (click)="duplicate()" >Duplicate</button>
+</mat-menu>

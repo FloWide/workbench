@@ -1,0 +1,51 @@
+<div class="container" style="display: flex;flex-direction: column;">
+    <app-header *ngIf="header">
+        
+        <h2 slot="center">{{scriptModel?.name}}</h2>
+
+        <button mat-icon-button (click)="scriptControlClick()" [title]="state === 'active' ? 'Stop' : 'Start' ">
+                <mat-icon>
+                        {{state === 'active' ? 'close' : 'play_arrow'}}
+                </mat-icon>
+        </button>
+    </app-header>
+
+    <div class="content">
+        <ng-container *ngIf="url || !state">
+            <ng-container *ngIf="state === 'inactive'">
+                <h1 style="opacity: 0.6;">Application is inactive</h1>
+            </ng-container>
+            <iframe
+            class="frame"
+            maxSize
+            [src]="url | urlsafe"
+            frameBorder="0"
+            *ngIf="!frameRefresh && state === 'active'"
+            #frame
+            >
+            </iframe>
+            <mat-card class="floating-terminal" [style.visibility]=" showTerminal ? '' : 'hidden' ">
+                <mat-card-title cdkDrag cdkDragHandle cdkDragRootElement=".floating-terminal">
+                    <h3 style="margin: 0;">Terminal</h3>
+                    <span style="flex: 1 1 auto;"></span>
+                    <button mat-icon-button (click)="showTerminal = false">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-card-title>
+                <mat-card-content>
+                    <div style="box-sizing: border-box;width: 600px;height: 300px;">
+                        <base-term #term class="term" (ready)="onTerminalReady($event, term)"></base-term>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        <script-loading maxSize *ngIf="state === 'starting' || state === 'init' || frameRefresh"></script-loading>
+        </ng-container>
+        <ng-container *ngIf="!url && state">
+                <div style="padding: 10px; box-sizing: border-box;width: 100%;height: 100%;">
+                    <base-term #term class="term" (ready)="onTerminalReady($event, term)"></base-term>
+                </div>
+        </ng-container>
+    </div>
+
+</div>
+

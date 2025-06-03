@@ -1,0 +1,17 @@
+<div class="container">
+
+    <ng-container *ngIf="isBackendWorking$ | async">
+        <img src="assets/badge-brand-light.svg" alt="" width="256px" height="256px">
+        <h1>Nothing here just yet</h1>
+        <button mat-stroked-button (click)="boardEvents.onCreateNew$.next()" style="margin: 0 0.5em 0 0.5em;" *requiresPermissions="['create:repo']">
+            <mat-icon fontSet="fa" fontIcon="fa-circle-plus"></mat-icon>
+            Create New
+        </button>
+    </ng-container>
+
+    <ng-container *ngIf="!(isBackendWorking$ | async)">
+        <h1>It looks like our services are down :(</h1>
+    </ng-container>
+
+    
+</div>

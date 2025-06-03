@@ -1,0 +1,12 @@
+apps:
+  {{ name }}:
+    run: main.py
+    proxy: true
+
+development: 
+  ignore: |
+    .venv
+    .git
+    *.lock
+  languageService:
+    python: pylsp

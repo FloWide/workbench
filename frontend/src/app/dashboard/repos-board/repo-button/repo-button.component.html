@@ -1,0 +1,51 @@
+<button mat-raised-button class="repo-button" style="height: fit-content;cursor: default;" [disabled]="!repo.ready" >
+
+    <mat-progress-bar *ngIf="!repo.ready" class="progress-bar" mode="buffer" color="warn"></mat-progress-bar>
+
+    <div class="container">
+        <div class="container-left">
+            <div class="title">
+                <h1 style="margin: 0;">{{repo?.name}} <small>ID: {{repo?.id}}</small> </h1>
+                
+            </div>
+            <div class="details">
+                <mat-chip-list>
+                        <mat-chip title="Current branch" style="cursor: pointer;">
+                            <mat-icon fontSet="fa-solid" fontIcon="fa-code-branch" style="height: 10px;width:10px"></mat-icon>
+                            {{gitState?.head}}
+                        </mat-chip>
+                    <a role="button" (click)="openReleaseList()">
+                        <mat-chip title="Releases" style="cursor: pointer;">
+                            <mat-icon fontSet="fa-solid" fontIcon="fa-box-archive" style="height: 10px;width:10px"></mat-icon>
+                            &nbsp; {{releases.length}}
+                        </mat-chip>
+                    </a>
+                </mat-chip-list>
+            </div>
+        
+        </div>
+        <div class="container-right">
+            
+            <button mat-icon-button (click)="edit.emit(repo)" title="Edit">
+                <mat-icon>
+                    edit
+                </mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="createRelease()" title="Create Release">
+                <mat-icon fontSet="fa-solid" fontIcon="fa-box-archive">
+                    
+                </mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="delete.emit(repo)" title="Delete">
+                <mat-icon>
+                    delete
+                </mat-icon>
+            </button>
+
+        </div>
+    </div>
+
+
+</button>

@@ -1,0 +1,4 @@
+apps:
+  {{ name }}:
+    run: echo
+    cliArgs: ["Hello FloWide!"]

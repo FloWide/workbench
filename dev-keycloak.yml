@@ -1,0 +1,126 @@
+# Dev keycloak config
+realm: workbench
+defaultSignatureAlgorithm: RS256
+accessTokenLifespan: 86400
+accessTokenLifespanForImplicitFlow: 86400
+ssoSessionIdleTimeout: 86400
+enabled: true
+loginWithEmailAllowed: true 
+eventsEnabled: true
+eventsListeners:
+  - listener-webhook
+
+# Clients
+clients:
+  # API
+  - clientId: workbench-api   
+    secret: 9c9438674b46485da1f61de1b63bcbab
+    enabled: true
+    bearerOnly: false
+    publicClient: true
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: true
+    webOrigins:
+      - "*"
+    redirectUris:
+      - "*"
+
+# Roles (permissions)
+roles:
+  realm:
+    - name: default-roles-solvergo
+      composite: true
+      composites:
+        realm:
+          - offline_access
+          - uma_authorization
+        client: 
+          workbench-api:
+            - app
+          account:
+            - view-profile
+            - manage-account
+  client:
+    workbench-api:
+      - name: repo
+        composite: false
+        clientRole: true
+      - name: user
+        composite: false
+        clientRole: true
+      - name: release
+        composite: false
+        clientRole: true
+      - name: service
+        composite: false
+        clientRole: true
+      - name: app
+        composite: false
+        clientRole: true
+      - name: read:public-http
+        composite: false
+        clientRole: true
+      - name: write:public-http
+        composite: false
+        clientRole: true
+      - name: read:shared-files
+        composite: false
+        clientRole: true
+      - name: write:shared-files
+        composite: false
+        clientRole: true
+      - name: admin
+        composite: false
+        clientRole: true
+        description: Gives access to admin REST calls
+      - name: god
+        description: Gives root access in container and gives R/W to the docker socket.
+        composite: false
+        clientRole: true
+      - name: network-access:devices-network
+        composite: false
+        clientRole: true
+      - name: network-access:deployment
+        composite: false
+        clientRole: true
+
+users:
+  - username: john.test
+    enabled: true
+    email: john.test@test.com
+    firstName: John
+    lastName: Test
+    credentials:
+      - type: password
+        value: test
+        temporary: false
+  - username: workbench-admin
+    enabled: true
+    email: workbench-admin@flowide.net
+    firstName: Workbench
+    lastName: Admin
+    credentials:
+      - type: password
+        value: admin
+        temporary: false
+    clientRoles:
+      realm-management:
+        - create-client
+        - impersonation
+        - manage-authorization
+        - manage-clients
+        - manage-events
+        - manage-identity-providers
+        - manage-realm
+        - manage-users
+        - query-clients
+        - query-groups
+        - query-realms
+        - query-users
+        - realm-admin
+        - view-authorization
+        - view-clients
+        - view-events
+        - view-identity-providers
+        - view-realm
+        - view-users

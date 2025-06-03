@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Create new Repository</h2>
+<form [formGroup]="creationForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content>
+    <mat-form-field style="width: 100%;" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name">
+        <mat-error *ngIf="creationForm.controls.name.invalid">{{getErrorMessage(creationForm.controls.name)}}</mat-error>
+    </mat-form-field>
+    <mat-form-field style="width:100%" appearance="fill">
+        <mat-label>Template</mat-label>
+        <mat-select formControlName="template">
+        <mat-option *ngFor="let type of types" [value]="type">
+            {{type | titlecase}}
+        </mat-option>
+        </mat-select>
+    </mat-form-field>
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center">
+    <button mat-button type="button" (click)="onClose()">Cancel</button>
+    <span fxFlex='1 1 auto'></span>
+    <button type="submit" mat-flat-button color="primary" [disabled]="!creationForm.valid" >Create</button>
+    </div>
+</form>

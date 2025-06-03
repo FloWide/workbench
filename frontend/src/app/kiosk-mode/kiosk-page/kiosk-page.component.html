@@ -1,0 +1,13 @@
+<div class="container">
+
+    <ng-container *ngIf="loginError && !loggedIn">
+        <h1 style="opacity: 0.6;">Failed to log in</h1>
+        <h2 style="opacity: 0.6;">{{loginError?.error_description}}</h2>
+    </ng-container>
+
+    <ng-container *ngIf="!loggedIn && !loginError">
+        <h1 style="opacity: 0.6;">Logging in...</h1>
+    </ng-container>
+
+    <app-script-runner *ngIf="loggedIn && !loginError" style="width:100%;height:100%" #scriptRunner [header]="false"></app-script-runner>
+</div>

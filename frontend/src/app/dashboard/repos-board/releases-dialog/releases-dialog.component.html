@@ -1,0 +1,18 @@
+<h1>Releases</h1>
+<mat-list>
+
+    <mat-list-item
+        *ngFor="let item of releases"
+    >
+        <div class="item">
+            <h2>{{item.name}} <small>{{prettyTime(item.created_at)}}</small> </h2>
+            <span fxFlex="1 1 auto"></span>
+            <button mat-icon-button style="align-self: flex-end;" (click)="deleteRelease(item)" title="Delete">
+                <mat-icon>
+                    delete
+                </mat-icon>
+            </button>
+        </div>
+    </mat-list-item>
+
+</mat-list>

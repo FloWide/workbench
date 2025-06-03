@@ -1,0 +1,35 @@
+<mat-toolbar [color]="'primary'" fxLayout="row" class="tool-bar" fxLayoutAlign="center center">
+
+    <a [routerLink]="['/apps']" >
+        <img class="logo" src="assets/logo-white.svg" /> 
+    </a>
+
+    
+
+    <span fxLayout="row" fxLayoutAlign="center center" fxFlex="1 1 auto">
+        <ng-content select="[slot=center]"></ng-content>
+    </span>
+
+    <div class="actions" #actions>
+        <ng-content select=":not([slot=center])"></ng-content>
+    </div>
+
+    <!--only show divider if there are actions displayed-->
+    <div class="divider" *ngIf="actions?.children && actions.children.length > 0" ></div>
+
+    <button mat-button [matMenuTriggerFor]="backendMenu" class="side-margin">
+        {{selectedConnector?.location_name ? selectedConnector.location_name : "Select a DCM connection"}}
+        <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #backendMenu>
+        <button mat-menu-item *ngFor="let conn of connectors" (click)="setConnector(conn)">{{conn.location_name}}</button>
+    </mat-menu>
+    <ngx-avatar matRipple [matMenuTriggerFor]="userMenu"  [value]=" user?.firstName[0] + user?.lastName[0] " [gravatarId]="user?.email" [round]="true"></ngx-avatar>
+    <mat-menu #userMenu class="side-margin">
+        <button mat-menu-item (click)="onLogOutClick()">Log out</button>
+        <button mat-menu-item>
+            <mat-slide-toggle (click)="$event.stopPropagation();" (change)="themeChange($event)" [checked]="theme === Themes.DARK ">Dark</mat-slide-toggle>
+          </button>
+    </mat-menu>
+
+</mat-toolbar>

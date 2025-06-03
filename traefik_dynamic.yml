@@ -1,0 +1,11 @@
+http:
+  middlewares:
+    apps-middleware:
+      stripPrefixRegex:
+        regex:
+          - "/apps/[A-Za-z0-9]+"
+    proxy-auth:
+      chain:
+        middlewares:
+          - traefik-forward-auth@docker
+          - workbench-proxy-auth@docker

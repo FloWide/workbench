@@ -1,0 +1,25 @@
+<div class="container">
+  
+  <mat-list>
+
+    <mat-list-item
+      class="list-item"
+      *ngFor="let app of apps"
+    >
+      <a role="button" *ngIf="isProxied(app)" (click)="openPreview(app)">{{app}}</a>
+      <span *ngIf="!isProxied(app)">{{app}}</span>
+      <span style="flex: 1 1 auto"></span>
+
+      <button title="Open terminal" mat-icon-button (click)="openTerminal(app)">
+        <i class="fa-solid fa-terminal" ></i>
+      </button>
+
+      <button title="Stop" mat-icon-button (click)="onStop(app)">
+        <mat-icon>stop</mat-icon>
+      </button>
+
+    </mat-list-item>
+
+  </mat-list>
+
+</div>

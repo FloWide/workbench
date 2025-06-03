@@ -1,0 +1,36 @@
+<app-browser-frame [state]="state" style="height: calc(100% - 20px); display: block;" (refreshClick)="refresh()" (popout)="popout()">
+    <iframe class="frame"
+        maxSize
+        [src]="url | urlsafe"
+        frameBorder="0"
+        *ngIf=" !frameRefresh && state === 'active'"
+        #frame
+        >
+    </iframe>
+
+    <div class="overlay" maxSize fxLayout="column" fxLayoutAlign="center center" *ngIf="state !== 'active' || frameRefresh">
+        
+
+        <ng-container [ngSwitch]="state">
+
+            <ng-container *ngSwitchCase="'inactive'">
+                <h1 style="opacity: 0.6;">Script is inactive</h1>
+            </ng-container>
+
+            <ng-container *ngSwitchDefault>
+                <h1 style="opacity: 0.6;">Loading...</h1>
+                <div style="width: 50%;height: 150px;">
+                    <mat-progress-bar mode="buffer"></mat-progress-bar>
+                </div>
+            </ng-container>
+
+        </ng-container>
+    </div>
+
+</app-browser-frame>
+
+<ng-template #tabTemplate let-container="container" let-title="title">
+    <i class="fa-solid fa-tv" style="margin: 0 5px 0 5px"></i>
+    <span class="lm_title" (click)="container.focus()">{{(appName$ | async) || title}}</span>
+    <div class="lm_close_tab" (click)="container.close()"></div>
+</ng-template>

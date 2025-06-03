@@ -1,0 +1,5 @@
+{
+    "url":"http://auth.localhost",
+    "realm":"workbench",
+    "clientId":"workbench-api"
+}

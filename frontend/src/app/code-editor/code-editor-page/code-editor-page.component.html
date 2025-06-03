@@ -1,0 +1,128 @@
+
+<div class="container">
+    <app-header *ngIf="fullScreen">
+
+        <h2 slot="center">{{repo?.name}}</h2>
+
+        <button mat-stroked-button [disabled]="websocketConnected" style="margin: 0 1em 0 1em;" (click)="reconnectWebsocket()">
+            {{websocketConnected ? 'Connected' : 'Reconnect'}}
+        </button>
+
+        <button mat-icon-button routerLink="/repos">
+            <mat-icon>
+                close
+            </mat-icon>
+        </button>
+
+    </app-header>
+    
+    <ng-container *ngIf="(editService.status$ | async); let status;">
+
+        <!--ready state block-->
+        <ng-container *ngIf="status.state === 'ready' ">
+            <menu-bar #menuBar [setting]="menuBarSetting" (menuItemClicked)="menuAction($event)"></menu-bar>
+            <mat-divider *ngIf="showToolBar"></mat-divider>
+            <tool-bar #toolBar *ngIf="showToolBar">
+                <ng-container slot="start">
+                    <button mat-icon-button title="New File" (click)="onNewFile()">
+                        <mat-icon>note_add</mat-icon>
+                    </button>
+                    <button mat-icon-button title="New Folder" (click)="onNewFolder()">
+                        <mat-icon>create_new_folder</mat-icon>
+                    </button>
+                    <button mat-icon-button title="Save Files" (click)="onSaveFiles()">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                    <button mat-icon-button title="Upload Files" (click)="onUploadFiles()">
+                        <mat-icon>upload</mat-icon>
+                    </button>
+                    <button mat-icon-button title="Open Terminal" (click)="onOpenTerminal()">
+                        <mat-icon>call_to_action</mat-icon>
+                    </button>
+                </ng-container>
+                <ng-container slot="center" *ngIf="appsAndServices$ | async; let apps">
+
+                    <button
+                        *ngIf="buildExists$ | async"
+                        mat-stroked-button
+                        title="Run build"
+                        class="big-button"
+                        (click)="onBuild()"
+                    >   
+                        <mat-icon>build</mat-icon>
+                        <span>Build</span>
+                    </button>
+
+                    <button
+                        *ngIf="!isAppRunning(selectedApp || apps[0])" 
+                        mat-stroked-button 
+                        title="Run app" 
+                        class="big-button" 
+                        (click)="onRun(selectedApp || apps[0])" 
+                        [matContextMenuTriggerFor]="apps.length > 1 ? appsMenu : null" 
+                        [matMenuTriggerData]="{apps:apps}"
+                    >
+                        <mat-icon [style.color]="'green'">play_arrow</mat-icon>
+                        <span>Run {{ apps.length === 1 ? '' :selectedApp || apps[0]}}</span>
+                        <button *ngIf="apps.length > 1" class="dropdown-button" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="appsMenu" [matMenuTriggerData]="{apps:apps}">
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                    </button>
+                    
+                    <button
+                        *ngIf="isAppRunning(selectedApp || apps[0])"
+                        mat-stroked-button
+                        title="Stop app"
+                        class="big-button"
+                        (click)="onStop(selectedApp || apps[0])"
+                        [matContextMenuTriggerFor]="apps.length > 1 ? appsMenu : null" 
+                        [matMenuTriggerData]="{apps:apps}"
+                    >
+                        <mat-icon [style.color]="'red'">stop</mat-icon>
+                        <span>Stop {{ apps.length === 1 ? '' :selectedApp || apps[0]}}</span>
+                        <button *ngIf="apps.length > 1" class="dropdown-button" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="appsMenu" [matMenuTriggerData]="{apps:apps}">
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                    </button>
+
+                    <mat-menu #appsMenu>
+                        <ng-template
+                            matMenuContent
+                            let-apps="apps"
+                        >
+                            <button mat-menu-item *ngFor="let app of apps" (click)="selectedApp = app">{{app}}</button>
+
+                        </ng-template>
+
+                    </mat-menu>
+
+                </ng-container>
+                <ng-container slot="end">
+                    <button mat-stroked-button title="Commit" class="big-button" (click)="onCommit()">
+                        <mat-icon [style.color]="'green'">commit</mat-icon>
+                        <span>Commit</span>
+                    </button>
+                </ng-container>
+            </tool-bar>
+        
+            <golden-layout-host #glHost [injector]="injector" style="width:100%; flex: 1 1 auto"></golden-layout-host>
+        </ng-container>
+        <!--ready state block-->
+
+        <ng-container *ngIf="status.state === 'starting'">
+
+            <div class="starting">
+
+                <span class="spinner"></span>
+
+                <p class="mat-caption" style="text-align: center; padding:5px" *ngIf="status.message">{{status.message}}</p>
+                <p *ngIf="editService.onTaskStream$ | async; let stream">{{ prettyPrintStream(stream.data) }}</p>
+
+            </div>
+
+        </ng-container>
+
+
+    </ng-container>
+
+</div>
