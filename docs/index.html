@@ -1,1 +1,296 @@
-<html><body>FloWide Workbench Documentation Page placeholder</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-M">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloWide Workbench - Open-Source Development & Deployment Platform</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            color: #003243;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .container {
+            width: 90%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #EDF7FF;
+            padding: 20px 0;
+            border-bottom: 2px solid #0c8dad;
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+        }
+        header h1 {
+            color: #003243;
+            margin: 0;
+            font-size: 2em;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+        }
+        nav ul li {
+            margin-left: 20px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #0C8DAD;
+            font-weight: bold;
+        }
+        nav ul li a:hover {
+            color: #0C8DADCC;
+        }
+        .hero {
+            background-color: #EDF7FF;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .hero h2 {
+            color: #003243;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .section {
+            padding: 40px 0;
+            border-bottom: 1px solid #0c8dad33; /* Lighter border for sections */
+        }
+        .section:last-of-type { /* Ensure last actual content section before footer has no bottom border if footer has its own styling */
+            border-bottom: none;
+        }
+        .section-even {
+             background-color: #EDF7FF;
+        }
+        .section h3 {
+            color: #003243;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0c8dad;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .feature-item {
+            background-color: #FFFFFF;
+            padding: 20px;
+            border: 1px solid #0c8dad;
+            border-radius: 5px;
+        }
+        .feature-item h4 {
+            color: #003243;
+            margin-top: 0;
+        }
+        .tech-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .tech-list li {
+            background-color: #FFFFFF;
+            color: #003243;
+            padding: 8px 15px;
+            border: 1px solid #0c8dad;
+            border-radius: 20px; /* Pill shape */
+            font-size: 0.9em;
+            box-shadow: 0 2px 4px #0c8dad33;
+        }
+        footer {
+            background-color: #003243;
+            color: #EDF7FF;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px; /* Ensure space above footer */
+        }
+        footer a {
+            color: #0C8DAD;
+        }
+        footer a:hover {
+            color: #0C8DADCC;
+        }
+
+        /* Call to Action Button Style */
+        .button {
+            display: inline-block;
+            background-color: #0C8DAD;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #003243;
+            color: #EDF7FF;
+        }
+
+
+        /* Mobile Friendliness */
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: column;
+                align-items: center; /* Center items in column layout */
+            }
+            header h1 {
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            nav ul {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: center; /* Center nav items */
+            }
+            nav ul li {
+                margin-left: 10px; /* Adjust spacing for smaller screens */
+                margin-right: 10px;
+            }
+            .hero h2 {
+                font-size: 2em;
+            }
+            .hero p {
+                font-size: 1em;
+            }
+            .section h3 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>FloWide Workbench</h1>
+            <nav>
+                <ul>
+                    <li><a href="#documentation">Documentation</a></li>
+                    <li><a href="#tutorials">Tutorials</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2>Your Open-Source Development & Deployment Platform</h2>
+            <p>A general-purpose tool for containerized applications.</p>
+        </div>
+    </section>
+  
+    <section class="section section-even">
+        <div class="container">
+            <h3>Key Features</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>Containerized Application Support</h4>
+                    <p>Develop and deploy applications packaged as Docker containers, ensuring consistency across environments.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Streamlit & Next.js Ready</h4>
+                    <p>Out-of-the-box support for popular frameworks like Streamlit for data apps and Next.js for full-stack web applications.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Integrated Version Control & Releases</h4>
+                    <p>Automated Git-based version control for your code, with the ability to create containerized releases from specific commits, configured via a simple `workbench.yml` file.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Flexible Deployment Options</h4>
+                    <p>Releases can be one-shot Python scripts, long-running services, or services with HTTP ports proxied to users.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Identity & Access Management</h4>
+                    <p>Leverages Keycloak for robust identity management. Define granular permissions for users, controlling access to applications and resources.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Layered Network Access Control</h4>
+                    <p>Two layers of network control: container-to-container communication rules via `workbench.yml` and HTTP(s) access controlled by Traefik (public or authenticated access for static content and services).</p>
+                </div>
+                <div class="feature-item">
+                    <h4>One-Click Next.js Deployment</h4>
+                    <p>Effortlessly deploy your Next.js applications with a single click.</p>
+                </div>
+                 <div class="feature-item">
+                    <h4>Integrated Shell & Package Management</h4>
+                    <p>Provides an integrated shell and Python package management for each container, streamlining development workflows.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Cloud & Edge Compatible</h4>
+                    <p>Designed to run effectively in cloud environments and on edge devices, even without persistent internet connectivity.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h3>What is FloWide Workbench?</h3>
+            <p>Workbench is an integrated development and deployment platform for containerized applications. It simplifies the creation, versioning, and deployment of your projects, offering out-of-the-box support for Streamlit and Next.js based full-stack applications.</p>
+            <p>The platform is architected from multiple services running in Docker containers, ensuring modularity and scalability.</p>
+        </div>
+    </section>
+
+     <section class="section section-even" id="documentation">
+        <div class="container">
+            <h3>Explore Our Documentation</h3>
+            <p>Dive deep into FloWide Workbench. Our comprehensive documentation provides all the details you need to get started, configure your environment, and master the platform's features.</p>
+            <p><a href="#" class="button">Go to Documentation</a></p> <!-- Placeholder Link -->
+        </div>
+    </section>
+
+    <section class="section" id="tutorials">
+        <div class="container">
+            <h3>Learn with Tutorials</h3>
+            <p>Follow our step-by-step tutorials to build and deploy your first applications with FloWide Workbench. From basic setups to advanced configurations, we've got you covered.</p>
+            <p><a href="#" class="button">Browse Tutorials</a></p> <!-- Placeholder Link -->
+        </div>
+    </section>
+
+    <section class="section section-even"> <!-- New Technologies Section -->
+        <div class="container">
+            <h3>Technologies Powering Workbench</h3>
+            <p>FloWide Workbench leverages a robust stack of modern technologies to deliver a seamless development and deployment experience:</p>
+            <ul class="tech-list">
+                <li>Docker</li>
+                <li>Python</li>
+                <li>Git</li>
+                <li>Streamlit</li>
+                <li>Next.js</li>
+                <li>Angular</li>
+                <li>Keycloak</li>
+                <li>Traefik</li>
+                <li>Redis</li>
+                <li>Celery</li>
+                <!-- Add more technologies here as identified -->
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Famidat Kft. All rights reserved.</p>
+            <p>FloWide Workbench - The open-source path to powerful applications.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
