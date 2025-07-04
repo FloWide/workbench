@@ -87,9 +87,10 @@ async def build_image(
                 stream=True,
                 tag=tag,
                 buildargs={**buildargs,**proxies} if buildargs else proxies,
-                labels=labels,
-                nocache=True,
-                platform="linux/amd64",
+                labels=labels
+                # For local development, purposes
+                # nocache=True,
+                # platform="linux/amd64",
             )
             async for line in stream:
                 if line.get("errorDetail"):

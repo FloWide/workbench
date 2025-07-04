@@ -1,10 +1,10 @@
 # python packages installed systemwide in the container
-aiofiles == 23.2.0
+aiofiles
 aiohttp == 3.8.5
 aioredis == 2.0.1
 aiosmtplib == 2.0.2
 async-timeout == 4.0.2
-cbor == 1.0.0
+cbor
 geopandas == 0.13.2
 httplib2 == 0.22.0
 jsonpatch == 1.33
@@ -17,7 +17,7 @@ networkx == 3.1
 nextcloud-api-wrapper == 0.2.3
 numpy == 1.25.2
 open3d == 0.17.0
-opencv-python-headless == 4.8.0.74
+opencv-python-headless
 plotly == 5.15
 pygit2 == 1.12.2
 pygithub == 1.59.1
