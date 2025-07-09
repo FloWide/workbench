@@ -48,7 +48,9 @@ class AppConfig(BaseModel):
         if len(split_args) > 1:
             path = split_args[0]
             cli_args = split_args[1:] + args
-        config.cmd(['run', path]+ cli_args)
+            config.cmd(['run', path]+ cli_args)
+        else:
+            config.cmd(['run', self.run])
 
         if self.proxy:
             config.label('traefik.enable','true')
