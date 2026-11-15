@@ -6,16 +6,15 @@ from typing import (
     Callable,
     List,
     Literal,
-    Optional,
     TypeAlias,
-    overload,
 )
 
 import httpx
-from fastapi import Depends, HTTPException, Request, Security, WebSocket
+from fastapi import Depends, HTTPException, Security
 from fastapi.security import OpenIdConnect
 from jose import JWTError, jwt
 from jose.constants import ALGORITHMS
+from starlette.requests import HTTPConnection
 
 from ..app.config import config
 from ..crud.exceptions import DBNotFoundException
@@ -55,27 +54,11 @@ class Oauth2BearerToken(OpenIdConnect):
             auto_error=False,
         )
 
-    @overload
-    async def __call__(self, request: Request, websocket: None = None) -> str:
-        ...
-
-    @overload
-    async def __call__(self, request: None, websocket: WebSocket) -> str:
-        ...
-
-    # either request or websocket is always passed
-    async def __call__(
-        self,
-        request: Optional[Request] = None,
-        websocket: Optional[WebSocket] = None,
-    ) -> str:
-        req = request or websocket
-        if req is None:
-            raise CREDENTIALS_EXCEPTION
-        scheme, _, token = req.headers.get('Authorization', '').partition(' ')
+    async def __call__(self, request: HTTPConnection) -> str:  # type: ignore[override]
+        scheme, _, token = request.headers.get('Authorization', '').partition(' ')
         if token:
             return token
-        token = req.cookies.get("token") or req.query_params.get("token")
+        token = request.cookies.get("token") or request.query_params.get("token")
         if not token:
             raise CREDENTIALS_EXCEPTION
         return token
