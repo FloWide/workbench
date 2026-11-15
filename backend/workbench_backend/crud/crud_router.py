@@ -224,10 +224,10 @@ class CRUDRouter(
     def _remove_api_route(self, path: str, methods: List[str]) -> None:
         methods_ = set(methods)
 
-        for route in self.routes:
+        for route in list(self.routes):
             if (
-                route.path == f"{self.prefix}{path}"  # type: ignore
-                and route.methods == methods_  # type: ignore
+                getattr(route, "path", None) == f"{self.prefix}{path}"
+                and getattr(route, "methods", None) == methods_
             ):
                 self.routes.remove(route)
 
