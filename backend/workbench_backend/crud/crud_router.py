@@ -436,6 +436,8 @@ class UserSharedCRUDRouter(
         return route
 
     def create_read_by_id_check_permission_dependency(self, rw: ReadWriteEnum) -> Callable[..., Awaitable[ModelType]]:
+        read_by_id_dep = super().create_read_by_id_dependency()
+
         @catch_errors
         async def dep(
             crud: Annotated[
@@ -447,7 +449,7 @@ class UserSharedCRUDRouter(
                 ],
                 Depends(self.get_crud),
             ],
-            obj: Annotated[ModelType, Depends(super().create_read_by_id_dependency())],
+            obj: Annotated[ModelType, Depends(read_by_id_dep)],
         ) -> ModelType:
             from .exceptions import InvalidAccess
             access = await crud.get_rw_access(obj)

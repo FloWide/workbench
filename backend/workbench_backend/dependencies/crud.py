@@ -46,10 +46,12 @@ def create_crud_dependency_with_user(
 ) -> Callable[
     ..., AsyncGenerator[UserOwnedCrudClassType, None]
 ]:
+    crud_dep = create_crud_dependency(crudClass)
+
     async def dep(
         user: GET_USER,
         crud: Annotated[
-            UserOwnedCrudClassType, Depends(create_crud_dependency(crudClass))
+            UserOwnedCrudClassType, Depends(crud_dep)
         ],
     ) -> AsyncGenerator[UserOwnedCrudClassType, None]:
         with crud.with_user(user) as c:
