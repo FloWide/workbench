@@ -1,7 +1,10 @@
-**/node_modules/
-**/build
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+**/build/
+**/dist/
 .git
-npm-debug.log
+.venv/
 .coverage
 .coverage.*
 .env

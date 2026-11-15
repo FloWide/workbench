@@ -248,10 +248,10 @@ class EditorRpc(jsonrpc.JsonRpc):
 
     async def _on_workbench_config_changed(self) -> None:
         try:
-            old = self._editable_repo.workbench_config.copy(deep=True)
+            old = self._editable_repo.workbench_config.model_copy(deep=True)
             await self._editable_repo.load_workbench_config()
             await self.notify('workbench_config_changed', config=self._editable_repo.workbench_config.model_dump())
-            diff = DeepDiff(old,self._editable_repo.workbench_config)
+            diff = DeepDiff(old, self._editable_repo.workbench_config, threshold_to_diff_deeper=0)
             affected_path: str
             for affected_path in diff.affected_paths:
                 if affected_path.startswith("root.development.languageService"):

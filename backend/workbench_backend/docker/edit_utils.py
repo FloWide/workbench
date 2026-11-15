@@ -25,8 +25,8 @@ from tenacity import (
     wait_exponential,
 )
 from websockets import exceptions as ws_exceptions
-from websockets.legacy import client as ws_client
-from websockets.legacy.client import WebSocketClientProtocol
+from websockets.asyncio import client as ws_client
+from websockets.asyncio.client import ClientConnection
 
 from ..app.config import config as app_config
 from ..db.models.repository import Repository
@@ -76,7 +76,8 @@ class Notification(BaseModel):
 
 class EditStreamHandler:
 
-    ws: Optional[WebSocketClientProtocol]
+    ws: Optional[ClientConnection]
+    task: Optional[asyncio.Task[None]]
 
     def __init__(
         self,
@@ -85,6 +86,8 @@ class EditStreamHandler:
     ) -> None:
         self.url = url
         self.on_receive = on_receive
+        self.ws = None
+        self.task = None
         self._ready = asyncio.Event()
 
     def start(self) -> None:
@@ -111,6 +114,7 @@ class EditStreamHandler:
                 continue
             except asyncio.CancelledError:
                 logging.debug('Process Stream task canceled')
+                await ws.close()
                 break
         self.ws = None
 

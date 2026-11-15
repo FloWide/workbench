@@ -8,11 +8,7 @@ RUN curl -O -L https://github.com/FloWide/lsp-ws-proxy/releases/download/v0.0.9/
     tar -xzvf lsp-ws-proxy.tar.gz && \
     mv lsp-ws-proxy /usr/bin/lsp-ws-proxy && \
     chmod +x /usr/bin/lsp-ws-proxy && \
-    npm install && \
-    npm run build && \ 
-    npm pack && \
-    npm install -g typescript-language-server typescript && \
-    find -name *.tgz | xargs npm install --global  && \
+    pip install --no-build-isolation --no-deps . && \
     chown -R runner:runner ${HOME} && \
     mv entrypoint.sh /usr/bin && \
     rm -rf /tmp/stuff

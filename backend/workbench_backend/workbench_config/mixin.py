@@ -1,5 +1,5 @@
 import logging
-from abc import ABCMeta, abstractproperty
+from abc import ABCMeta, abstractmethod
 from pathlib import Path
 
 import aiofiles
@@ -13,7 +13,8 @@ class WorkBenchConfigMixin(metaclass=ABCMeta):
 
     _workbench_config: WorkBenchConfig = WorkBenchConfig.default()
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def root_path(self) -> str:
         pass
 

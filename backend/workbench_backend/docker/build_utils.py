@@ -17,7 +17,9 @@ from typing import (
     TypeAlias,
 )
 
+import aiohttp
 from aiodocker import Docker
+from aiodocker.exceptions import DockerStreamError
 
 RELEASE_DOCKERFILE = """
     FROM base-workbench:latest
@@ -79,7 +81,7 @@ async def build_image(
     stream_callback: Optional[Callable[[str], None]] = None
 ) -> Any:
     proxies = {'HTTP_PROXY': os.environ.get('HTTP_PROXY'),'HTTPS_PROXY':os.environ.get('HTTPS_PROXY')}
-    async with Docker() as client:
+    async with Docker(timeout=aiohttp.ClientTimeout(total=None)) as client:
         async with archive_directory(context, extra_files) as file:
             stream = client.images.build(
                 fileobj=file,
@@ -92,11 +94,14 @@ async def build_image(
                 # nocache=True,
                 # platform="linux/amd64",
             )
-            async for line in stream:
-                if line.get("errorDetail"):
-                    raise BuildError(
-                        f"Docker image failed to build {tag}:\n{line['errorDetail']['message']}"
-                    )
-                if stream_callback and "stream" in line:
-                    stream_callback(line["stream"].strip())
+            try:
+                async for line in stream:
+                    if line.get("errorDetail"):
+                        raise BuildError(
+                            f"Docker image failed to build {tag}:\n{line['errorDetail']['message']}"
+                        )
+                    if stream_callback and "stream" in line:
+                        stream_callback(line["stream"].strip())
+            except DockerStreamError as e:
+                raise BuildError(f"Docker image failed to build {tag}:\n{e}") from e
         return await client.images.inspect(tag)

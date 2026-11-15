@@ -64,12 +64,18 @@ class Oauth2BearerToken(OpenIdConnect):
         ...
 
     # either request or websocket is always passed
-    async def __call__(self, request:Request = None, websocket: WebSocket = None) -> str: # type: ignore
+    async def __call__(
+        self,
+        request: Optional[Request] = None,
+        websocket: Optional[WebSocket] = None,
+    ) -> str:
         req = request or websocket
-        scheme, _, token = req.headers.get('Authorization','').partition(' ')
+        if req is None:
+            raise CREDENTIALS_EXCEPTION
+        scheme, _, token = req.headers.get('Authorization', '').partition(' ')
         if token:
             return token
-        token = req.cookies.get("token") or req.query_params.get("token") # type: ignore
+        token = req.cookies.get("token") or req.query_params.get("token")
         if not token:
             raise CREDENTIALS_EXCEPTION
         return token

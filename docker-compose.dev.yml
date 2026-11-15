@@ -126,7 +126,7 @@ services:
 
   workbench_backend:
     container_name: workbench_backend
-    image: nikolaik/python-nodejs:python3.11-nodejs20-bullseye
+    image: nikolaik/python-nodejs:python3.14-nodejs22-bookworm
     working_dir: /backend
     privileged: true
     pid: 'host'
@@ -173,7 +173,7 @@ services:
 
   celery_worker:
     container_name: celery_worker
-    image: nikolaik/python-nodejs:python3.11-nodejs20-bullseye
+    image: nikolaik/python-nodejs:python3.14-nodejs22-bookworm
     working_dir: /backend
     depends_on:
       app-db:

@@ -1,4 +1,4 @@
-FROM nikolaik/python-nodejs:python3.11-nodejs20-bullseye
+FROM nikolaik/python-nodejs:python3.14-nodejs22-bookworm
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY

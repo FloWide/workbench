@@ -2,7 +2,7 @@ import json
 from typing import List, Optional, TypedDict
 from uuid import uuid4
 
-from redis import asyncio as aioredis
+import redis.asyncio as redis_asyncio
 
 from ..app.config import config
 
@@ -14,7 +14,7 @@ class SessionData(TypedDict):
 
 class SessionManager:
     def __init__(self) -> None:
-        self.redis = aioredis.from_url(config.REDIS_BROKER_URL, decode_responses=True) # type: ignore
+        self.redis = redis_asyncio.from_url(config.REDIS_BROKER_URL, decode_responses=True) # type: ignore
 
     async def start_session(self, user_email: str) -> str:
         session_id = str(uuid4())
@@ -61,4 +61,4 @@ class SessionManager:
         await self.redis.set(f"session:{session_id}", json.dumps(session_data))
 
     async def close(self) -> None:
-        await self.redis.close()
+        await self.redis.aclose()

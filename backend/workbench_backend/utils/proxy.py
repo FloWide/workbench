@@ -6,7 +6,7 @@ import logging
 from typing import Optional
 
 import aiohttp
-from redis import asyncio as aioredis
+import redis.asyncio as redis_asyncio
 from sqlalchemy import UUID
 from tenacity import (
     retry,
@@ -60,7 +60,7 @@ async def wait_service_up(service_name: str) -> bool:
 class ProxyService:
 
     def __init__(self) -> None:
-        self.redis = aioredis.from_url(config.REDIS_BROKER_URL) # type: ignore
+        self.redis = redis_asyncio.from_url(config.REDIS_BROKER_URL) # type: ignore
         self.traefik_client = aiohttp.ClientSession(config.TRAEFIK_API_URL)
 
     async def new_service(self,name: str, ip: str, port: int) -> Optional[str]:
@@ -94,5 +94,5 @@ class ProxyService:
 
 
     async def close(self) -> None:
-        await self.redis.close()
+        await self.redis.aclose()
         await self.traefik_client.close()
