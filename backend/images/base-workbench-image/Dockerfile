@@ -12,6 +12,7 @@ WORKDIR /tmp/stuff
 COPY . .
 RUN pip install -r requirements.txt && \
     poetry build && \
+    pip install ./dist/*.whl && \
     mv ./config/.[!.]* ${HOME} && \
     chown -R runner:runner ${HOME} && \
     mv watchdog.sh /usr/local/bin/watchdog && \
