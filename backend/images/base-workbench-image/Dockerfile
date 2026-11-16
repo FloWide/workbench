@@ -1,6 +1,6 @@
 FROM python:3.14-trixie
 ARG GITHUB_TOKEN
-RUN userdel --remove pn && \
+RUN userdel --remove pn 2>/dev/null || true && \
     groupadd --gid 1000 runner && useradd --uid 1000 --gid runner --shell /bin/bash --create-home runner
 
 ENV HOME=/home/runner

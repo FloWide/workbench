@@ -1,7 +1,10 @@
 # python packages installed systemwide in the container
 aiohttp == 3.14.5
+poetry == 2.3.4
+psycopg == 3.3.9
+python-lsp-server == 1.14.0
+pyyaml == 6.0.3
+redis == 8.1.0
 setuptools == 84.2.1
 streamlit == 1.67.0
 wheel == 0.48.0
-psycopg == 3.3.9
-redis == 8.1.0

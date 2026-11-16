@@ -9,7 +9,7 @@ import yaml
 def install_pyproject() -> Optional[int]:
     if not Path('pyproject.toml').exists():
         return None
-    proc = subprocess.run(['poetry','install'])
+    proc = subprocess.run(['poetry', 'install', '--no-root'])
     return proc.returncode
 
 def install_node_modules() -> Optional[int]:

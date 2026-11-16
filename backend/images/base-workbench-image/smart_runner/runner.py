@@ -10,11 +10,37 @@ from typing import Callable, Dict, List, NoReturn
 STREAMLIT_IMPORT_REGEX = re.compile('((import)|(from)) +streamlit')
 
 def is_poetry_env() -> bool:
-    proc = subprocess.run(['poetry','env','info'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return proc.returncode == 0
+    try:
+        proc = subprocess.run(['poetry', 'env', 'info'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return proc.returncode == 0
+    except FileNotFoundError:
+        return False
+
+
+def _poetry_has_command(cmd: str) -> bool:
+    """Return True if cmd exists inside the active Poetry virtualenv's bin directory."""
+    try:
+        proc = subprocess.run(
+            ['poetry', 'env', 'info', '--path'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+    except FileNotFoundError:
+        return False
+    if proc.returncode != 0:
+        return False
+    venv_path = proc.stdout.strip()
+    if not venv_path or not os.path.isdir(venv_path):
+        return False
+    return shutil.which(cmd, path=os.path.join(venv_path, "bin")) is not None
+
 
 def npx_which(cmd: str) -> str | None:
-    proc = subprocess.run(['npx','--yes','which', cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        proc = subprocess.run(['npx', '--yes', 'which', cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except FileNotFoundError:
+        return None
     if proc.returncode != 0:
         return None
     return proc.stdout.decode().strip()
@@ -78,25 +104,27 @@ def run_smart(file_path: str, args: List[str]) -> NoReturn:
     func(file_path,args)
 
 def handle_command(path: str, args: List[str]) -> NoReturn:
-    if is_poetry_env():
-        os.execv(shutil.which("poetry"), ["poetry", "run", path] + args ) # type: ignore
-    else:
-        executable_path = shutil.which(path)
-        if executable_path:
-            try:
-                os.execv(executable_path, [executable_path] + args)
-            except OSError as e:
-                print(f"Failed to execute executable: {e}")
-                sys.exit(1)
-        elif (npx_path := npx_which(path)):
-            try:
-                os.execv(npx_path, [npx_path]+args)
-            except OSError as e:
-                print(f"Failed to execute executable: {e}")
-                sys.exit(1)
-        else:
-            print("Path not found or invalid.")
+    if is_poetry_env() and _poetry_has_command(path) and (poetry_bin := shutil.which("poetry")):
+        try:
+            os.execv(poetry_bin, ["poetry", "run", path] + args)
+        except OSError as e:
+            print(f"Failed to execute executable with poetry: {e}")
             sys.exit(1)
+    elif (executable_path := shutil.which(path)):
+        try:
+            os.execv(executable_path, [executable_path] + args)
+        except OSError as e:
+            print(f"Failed to execute executable: {e}")
+            sys.exit(1)
+    elif (npx_path := npx_which(path)):
+        try:
+            os.execv(npx_path, [npx_path] + args)
+        except OSError as e:
+            print(f"Failed to execute executable: {e}")
+            sys.exit(1)
+    else:
+        print("Path not found or invalid.")
+        sys.exit(1)
 
 def run_smart_runner(path: str, args: List[str]) -> NoReturn:
     path_obj = Path(path)

@@ -88,7 +88,7 @@ class EditorRpc(jsonrpc.JsonRpc):
                 await self.install_extra_packages()
                 await self.run_setup_script()
                 if self._editable_repo.file_exists('pyproject.toml'):
-                    await self._run_task('poetry',['poetry','install'],tty=False)
+                    await self._run_task('poetry', ['poetry', 'install', '--no-root'], tty=False)
             else:
                 await self.notify('status', state='starting', message='Using existing container')
 
