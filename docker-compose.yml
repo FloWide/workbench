@@ -31,7 +31,7 @@ services:
 
 
   keycloak:
-    image: docker.io/bitnami/keycloak:$KEYCLOAK_VERSION
+    image: docker.io/bitnamilegacy/keycloak:$KEYCLOAK_VERSION
     container_name: keycloak
     restart: unless-stopped
     depends_on:
@@ -91,7 +91,7 @@ services:
           ipv4_address: 10.20.20.13
 
   keycloak-config:
-    image: bitnami/keycloak-config-cli:$KEYCLOAK_CONFIG_VERSION
+    image: bitnamilegacy/keycloak-config-cli:$KEYCLOAK_CONFIG_VERSION
     container_name: keycloak-config
     depends_on:
       keycloak:

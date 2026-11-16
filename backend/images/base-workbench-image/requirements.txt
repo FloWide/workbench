@@ -8,3 +8,5 @@ redis == 8.1.0
 setuptools == 84.2.1
 streamlit == 1.67.0
 wheel == 0.48.0
+psycopg == 3.3.9
+redis == 8.1.0
